@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{{ template_helper.title }}</title>
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
@@ -15,7 +15,7 @@
             <div class="container">
                 <div class="row" id="base-header">
                     <div class="col" id="title">
-                        Title
+                        {{ template_helper.title }}
                     </div>
                     <div class="col-1 rhs">
                         <i class="material-icons">account_circle</i>
@@ -26,7 +26,7 @@
         <div class="container" id="main-wrapper">
             <div class="row">
                 <div class="col-md-2" id="side-menu">
-                    {% for item in menu_helper.getSideMenu %}
+                    {% for item in template_helper.getSideMenu %}
                         <a href="{{ item.url }}" class="row">
                             <div class="col-4">
                                 {% if item.icon %}

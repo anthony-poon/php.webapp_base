@@ -3,8 +3,9 @@ namespace App\Service;
 
 use Symfony\Component\Routing\RouterInterface;
 
-class MenuHelper {
-    private $sideMenu;
+class BaseTemplateHelper {
+    private $sideMenu = [];
+    private $title = "Web Application";
 
     public function __construct(RouterInterface $router) {
         $this->sideMenu = [
@@ -16,7 +17,10 @@ class MenuHelper {
         ];
     }
 
-    public function getSideMenu() {
+    /**
+     * @return array
+     */
+    public function getSideMenu(): array {
         return $this->sideMenu;
     }
 
@@ -27,4 +31,22 @@ class MenuHelper {
             "icon" => $icon
         ];
     }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     * @return BaseTemplateHelper
+     */
+    public function setTitle(string $title): BaseTemplateHelper {
+        $this->title = $title;
+        return $this;
+    }
+
+
 }
