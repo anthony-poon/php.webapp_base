@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ template_helper.title }}</title>
+        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+        <link rel="stylesheet" href="{{ asset("build/vendor.css") }}">
+        <link rel="stylesheet" href="{{ asset("build/base/login.css") }}">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-auto">
+                    <div id="login-wrapper">
+                        {{ form_start(form) }}
+                        {{ form_errors(form) }}
+                        <div id="title">
+                            Login
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="{{ asset("build/manifest.js") }}"></script>
+        <script src="{{ asset("build/vendor.js") }}"></script>
+    </body>
+</html>

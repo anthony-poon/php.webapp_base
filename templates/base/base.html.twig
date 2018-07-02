@@ -6,28 +6,53 @@
         <title>{{ template_helper.title }}</title>
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-        <link rel="stylesheet" href="{{ asset("css/base/base.css") }}">
+        <link rel="stylesheet" href="{{ asset("build/vendor.css") }}">
+        <link rel="stylesheet" href="{{ asset("build/base/base.css") }}">
         {% block css %}{% endblock %}
     </head>
     <body>
-        <div id="base-header-wrapper">
-            <div class="container">
-                <div class="row" id="base-header">
-                    <div class="col" id="title">
-                        {{ template_helper.title }}
-                    </div>
-                    <div class="col-1 rhs">
-                        <i class="material-icons">account_circle</i>
+        <div id="overlay-wrapper">
+            <div id="top-navbar">
+                <div class="container">
+                    <div class="row">
+                        <div class="col" id="title">
+                            {{ template_helper.title }}
+                        </div>
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                            <div class="col-auto rhs btn-like" data-submenu="#profile-menu">
+                                <i class="material-icons">account_circle</i>
+                                {{ app.user.fullName }}
+                            </div>
+                        {% else %}
+                            <a href="{{ path("login") }}" class="col-auto rhs btn-like">
+                                <i class="material-icons">account_circle</i>
+                                Welcome, Guest!
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
         <div class="container" id="main-wrapper">
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+            <div class="submenu" id="profile-menu">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <div class="item btn-like">
+                        Administration
+                    </div>
+                {% endif %}
+                <div class="item btn-like">
+                    Profile
+                </div>
+                <a href="{{ path("logout") }}" class="item btn-like">
+                    Logout
+                </a>
+            </div>
+            {% endif %}
             <div class="row">
                 <div class="col-md-2" id="side-menu">
                     {% for item in template_helper.getSideMenu %}
-                        <a href="{{ item.url }}" class="row">
+                        <a href="{{ item.url }}" class="row btn-like">
                             <div class="col-4">
                                 {% if item.icon %}
                                     <i class="material-icons">{{ item.icon }}</i>
@@ -48,6 +73,9 @@
                 </div>
             </div>
         </div>
+        <script src="{{ asset("build/manifest.js") }}"></script>
+        <script src="{{ asset("build/vendor.js") }}"></script>
+        <script src="{{ asset("build/base/base.js") }}"></script>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

@@ -1,36 +1,44 @@
 @import "../_var.scss";
+html {
+  color: #505050;
+}
 
-#base-header-wrapper {
+#overlay-wrapper {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
-  border-bottom: rgba(0, 0, 0, 0.1) 1px solid;
-  z-index: 99;
   color: #666666;
-  background-color: white;
-
-  #base-header {
+  z-index: 99;
+  #top-navbar {
+    border-bottom: rgba(0, 0, 0, 0.1) 1px solid;
+    background-color: white;
     height: 60px;
     display: flex;
     align-items: center;
-    .rhs .material-icons{
-      font-size: 32px;
+    #title {
+      font-size: 21px;
+      display: flex;
+      align-items: center;
     }
-  }
-  #title {
-    font-size: 21px;
+    .rhs {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      .material-icons{
+        font-size: 32px;
+        padding: 14px;
+      }
+    }
   }
 }
 
 #side-menu {
   padding-top: 52px;
   border-right: rgba(0, 0, 0, 0.1) 1px solid;
-  z-index: 98;
   height: 100vh;
   background-color: white;
   font-size: 14px;
-  color: #505050;
   >.row {
     transition: color 0.4s;
     padding-top: 8px;
@@ -40,20 +48,59 @@
       align-items: center;
     }
   }
-  >.row:hover {
-    color: $p-color-1;
-    cursor: pointer;
+
+}
+
+
+.submenu {
+  display: none;
+  position: fixed;
+  background-color: white;
+  z-index: 999;
+  font-size: 12px;
+  border-bottom: rgba(0, 0, 0 , 0.1) 1px solid;
+  border-left: rgba(0, 0, 0, 0.1) 1px solid;
+  border-right: rgba(0, 0, 0, 0.1) 1px solid;
+  .item:first-child {
+    margin-top: 16px;
   }
-  a {
-    text-decoration: none;
-    color: #505050;
+  .item:last-child {
+    margin-bottom: 16px;
+  }
+  .item {
+    position: relative;
+    width: 240px;
+    height: 40px;
+    padding-left: 24px;
+    display: flex;
+    align-items: center;
+    border-collapse: collapse;
   }
 }
 
 #main-wrapper {
   padding-top: 60px;
   color: #666666;
+  position: relative;
+  z-index: 1;
   #content-wrapper {
     margin-top: 60px
   }
+}
+
+.btn-like {
+  transition: color 0.4s;
+  cursor: pointer;
+}
+
+.btn-like:hover {
+  color: #007bff;
+}
+
+a.btn-like {
+  text-decoration: none;
+  color: #505050;
+}
+a.btn-like:hover {
+  text-decoration: none;
 }
