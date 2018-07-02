@@ -18,15 +18,11 @@ class UserRole extends Role{
     private $id;
 
     /**
-     * @ManyToMany(targetEntity="User", mappedBy="user_roles")
-     * @ORM\JoinTable(name="user_roles_mapping")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="user_roles")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * @var User
      */
-    private $users;
-
-    /**
-     * @ORM\Column(type="string", length=128, nullable=True)
-     */
-    private $description;
+    private $user;
 
     /**
      * @ORM\Column(type="string", length=128, unique=true, nullable=True, name="role_name")
@@ -36,24 +32,6 @@ class UserRole extends Role{
     public function __construct(string $role) {
         parent::__construct($role);
         $this->role = $role;
-        $this->users = new ArrayCollection();
-    }
-
-
-    /**
-     * @return string
-     */
-    public function getDescription(): string {
-        return $this->description;
-    }
-
-    /**
-     * @return self
-     * @param string
-     */
-    public function setDescription(string $description): self {
-        $this->description = $description;
-        return $this;
     }
 
     /**
@@ -64,13 +42,18 @@ class UserRole extends Role{
     }
 
     /**
-     * @return self
-     * @param string
+     * @return User
      */
-    public function setRole(string $role): self {
-        $this->role = $role;
-        return $this;
+    public function getUser(): User {
+        return $this->user;
     }
 
-
+    /**
+     * @param User $user
+     * @return UserRole
+     */
+    public function setUser(User $user): UserRole {
+        $this->user = $user;
+        return $this;
+    }
 }

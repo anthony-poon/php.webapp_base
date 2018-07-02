@@ -31,7 +31,6 @@ class InitCommand extends Command {
         if ($root) {
             $output->writeln("Root user exist already. Terminating.");
         } else {
-            $role = $this->getAdminRole();
             $output->writeln("Creating root users");
             $root = new User();
             $root->setUsername("root");
@@ -39,24 +38,14 @@ class InitCommand extends Command {
             $password = md5(random_bytes(10));
             $passwordHash = $this->passwordEncoder->encodePassword($root, $password);
             $root->setPassword($passwordHash);
-            $root->addRole($role);
             $this->entityManager->persist($root);
+            $role = new UserRole("ROLE_ADMIN");
+            $role->setUser($root);
+            $this->entityManager->persist($role);
             $this->entityManager->flush();
             $output->writeln("Root user created.");
             $output->writeln("Username: root");
             $output->writeln("Password: ".$password);
         }
-    }
-
-    private function getAdminRole(): UserRole {
-        $repo = $this->entityManager->getRepository(UserRole::class);
-        $role = $repo->findOneBy(["role" => "ROLE_ADMIN"]);
-        if (empty($role)) {
-            $role = new UserRole("ROLE_ADMIN");
-            $role->setDescription("Site Admin");
-            $this->entityManager->persist($role);
-            $this->entityManager->flush();
-        }
-        return $role;
     }
 }

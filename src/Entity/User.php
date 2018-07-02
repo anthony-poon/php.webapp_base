@@ -47,10 +47,9 @@ class User implements UserInterface, \Serializable {
     private $fullName;
 
     /**
-     * @ManyToMany(targetEntity="UserRole", inversedBy="users")
-     * @JoinTable(name="user_roles_mapping")
+     * @ORM\OneToMany(targetEntity="UserRole", mappedBy="user")
      */
-    private $userRoles;
+    private $roles;
 
     /**
      * @ORM\Column(type="string", length=64)
@@ -80,7 +79,7 @@ class User implements UserInterface, \Serializable {
     private $isActive = True;
 
     public function __construct() {
-        $this->userRoles = new ArrayCollection();
+        $this->roles = new ArrayCollection();
     }
 
     public function serialize() {
@@ -98,43 +97,19 @@ class User implements UserInterface, \Serializable {
         $this->password = $arr["password"];
     }
 
-    public function addRole(UserRole $role) {
-        $this->userRoles->add($role);
-    }
-
-    /**
-     * Returns the roles granted to the user.
-     *
-     * <code>
-     * public function getRoles()
-     * {
-     *     return array('ROLE_USER');
-     * }
-     * </code>
-     *
-     * Alternatively, the roles might be stored on a ``roles`` property,
-     * and populated in any number of different ways when the user object
-     * is created.
-     *
-     * @return (Role|string)[] The user roles
-     */
-    public function getRoles() {
-        return $this->userRoles->getValues();
-    }
-
     /**
      * @return mixed
      */
-    public function getUserRoles() {
-        return $this->userRoles;
+    public function getRoles() {
+        return $this->roles->toArray();
     }
 
     /**
-     * @param mixed $userRoles
+     * @param array $role
      * @return User
      */
-    public function setUserRoles($userRoles) {
-        $this->userRoles = $userRoles;
+    public function setRoles(array $role) {
+        $this->roles = new ArrayCollection($role);
         return $this;
     }
 
