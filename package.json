@@ -38,16 +38,10 @@
     "datatables.net-responsive-bs4": "^2.2.3",
     "datatables.net-select-bs4": "^1.2.7",
     "jquery": "^3.3.1",
-    "node-sass": "^4.9.0",
+    "node-sass": "^4.9.2",
     "popper.js": "^1.14.3",
-    "react": "^16.4.1",
-    "react-dom": "^16.4.1",
     "sass-loader": "^7.0.3",
     "underscore": "^1.9.1",
-    "urijs": "^1.19.1",
-    "voca": "^1.4.0",
-    "vue": "^2.5.16",
-    "vue-loader": "^15.2.4",
-    "vue-template-compiler": "^2.5.16"
+    "urijs": "^1.19.1"
   }
 }
