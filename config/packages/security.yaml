@@ -1,6 +1,6 @@
 security:
     encoders:
-            App\Entity\User: bcrypt
+        App\Entity\User: bcrypt
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     firewalls:
         dev:
@@ -8,6 +8,7 @@ security:
             security: false
         main:
             anonymous: ~
+            provider: db_provider
             form_login:
                 username_parameter: "form[username]"
                 password_parameter: "form[password]"
@@ -34,5 +35,6 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/member, roles: ROLE_ADMIN }
+        - { path: ^/member, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }

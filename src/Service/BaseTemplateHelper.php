@@ -6,7 +6,7 @@ use Symfony\Component\Routing\RouterInterface;
 class BaseTemplateHelper {
     private $sideMenu = [];
     private $title = "Web Application";
-
+    private $jsParam = [];
     public function __construct(RouterInterface $router) {
         $this->sideMenu = [
             [
@@ -48,5 +48,20 @@ class BaseTemplateHelper {
         return $this;
     }
 
+    /**
+     * @return array
+     */
+    public function getJsParam(): array {
+        return $this->jsParam;
+    }
+
+    /**
+     * @param array $jsParam
+     * @return BaseTemplateHelper
+     */
+    public function setJsParam(array $jsParam): BaseTemplateHelper {
+        $this->jsParam = $jsParam;
+        return $this;
+    }
 
 }

@@ -18,19 +18,19 @@ class UserRole extends Role{
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="user_roles")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\ManyToMany(targetEntity="User", mappedBy="roles")
      * @var User
      */
     private $user;
 
     /**
-     * @ORM\Column(type="string", length=128, unique=true, nullable=True, name="role_name")
+     * @ORM\Column(type="string", length=128, nullable=True, name="role_name", unique=true)
      */
     private $role;
 
     public function __construct(string $role) {
         parent::__construct($role);
+        $this->user = new ArrayCollection();
         $this->role = $role;
     }
 
@@ -44,8 +44,8 @@ class UserRole extends Role{
     /**
      * @return User
      */
-    public function getUser(): User {
-        return $this->user;
+    public function getUser(): array {
+        return $this->user->toArray();
     }
 
     /**
@@ -53,7 +53,7 @@ class UserRole extends Role{
      * @return UserRole
      */
     public function setUser(User $user): UserRole {
-        $this->user = $user;
+        $this->user = new ArrayCollection([$user]);
         return $this;
     }
 }

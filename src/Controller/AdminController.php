@@ -4,76 +4,122 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\UserRole;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use App\FormType\CreateUserFormType;
+use App\FormType\EditUserFormType;
+use App\Service\BaseTemplateHelper;
+use Doctrine\ORM\Query\Expr\Base;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AdminController extends Controller {
+    public function __construct(BaseTemplateHelper $helper) {
+        $helper->setTitle("Administration");
+    }
+    /**
+     * @Route("/admin", name="admin_list_user")
+     */
+    public function defaultAction() {
+        return $this->redirectToRoute("admin_list_user");
+    }
+
     /**
      * @Route("/admin/users", name="admin_list_user")
      */
-    public function listUser() {
-        $user = new User();
-        $addForm = $this->createFormBuilder($user)
-            ->add("username", TextType::class)
-            ->add("fullname", TextType::class)
-            ->add("plainPassword", RepeatedType::class, array(
-                "type" => PasswordType::class,
-                "invalid_message" => "Repeat password did not match.",
-                "first_options"  => array("label" => "Password"),
-                "second_options" => array("label" => "Repeat Password"),
-            ))
-            ->add('userRoles', EntityType::class, array(
-                'class' => UserRole::class,
-                'choice_label' => 'description',
-                'multiple' => true,
-                'expanded' => true,
-            ))
-            ->getForm();
-        return $this->render('admin/list_user.html.twig', [
-            "addForm" => $addForm->createView()
-        ]);
-    }
-    /**
-     * @Route("/api/admin/user", name="api_admin_list_user")
-     * @Method({"GET"})
-     */
-    public function listUserAPI() {
+    public function listUser(BaseTemplateHelper $helper, RouterInterface $router) {
         $repo = $this->getDoctrine()->getRepository(User::class);
-        $json = array_map(function($user){
-            /* @var \App\Entity\User $user */
-            return [
-                "id" => $user->getId(),
-                "full_name" => $user->getFullName(),
-                "username" => $user->getUsername(),
-                "email" => $user->getEmail(),
-            ];
-        } , $repo->findAll());
-        return new JsonResponse($json);
+        $userList = $repo->findAll();
+        $helper->setJsParam([
+            "addPath" => $this->generateUrl("admin_create_user"),
+            "editPath" => $router->getRouteCollection()->get("admin_edit_user")->getPath(),
+            "deletePath" => $router->getRouteCollection()->get("api_admin_delete_user")->getPath()
+        ]);
+        return $this->render('admin/list_user.html.twig', [
+            "userList" => $userList
+        ]);
     }
 
     /**
-     * @Route("/api/admin/user/{id}", name="api_admin_view_user", requirements={"id" = "\d+"})
-     * @Method({"GET"})
+     * @Route("/admin/users/create", name="admin_create_user")
      */
-    public function viewUserAPI(int $id) {
+    public function createUser(Request $request, UserPasswordEncoderInterface $encoder) {
+        $user = new User();
+        $form = $this->createForm(CreateUserFormType::class, $user);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /* @var \App\Entity\User $user */
+            $user = $form->getData();
+            $pw = $encoder->encodePassword($user, $user->getPlainPassword());
+            $user->setPassword($pw);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            $em->flush();
+            return $this->redirectToRoute("admin_list_user");
+        }
+        return $this->render("admin/user.html.twig", [
+            "title" => "Create User",
+            "form" => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/admin/users/{id}", name="admin_edit_user", requirements={"id"="\d+"})
+     */
+    public function editUser(Request $request, UserPasswordEncoderInterface $encoder, int $id) {
         $repo = $this->getDoctrine()->getRepository(User::class);
         $user = $repo->find($id);
-        $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
-        $jsonStr = $serializer->serialize($user, 'json');
-        return new Response(
-            $jsonStr,
-            200,
-            ["Content-Type" => "application/json"]
-        );
+        if (!$user) {
+            throw new \Exception("Invalid user id.");
+        }
+        $form = $this->createForm(EditUserFormType::class, $user);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /* @var \App\Entity\User $user */
+            $user = $form->getData();
+            $pw = $user->getPlainPassword();
+            if ($pw) {
+                $pw = $encoder->encodePassword($user, $pw);
+                $user->setPassword($pw);
+            }
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            foreach ($user->getRoles() as $role) {
+                $role->setUser($user);
+                $em->persist($role);
+            }
+            $em->flush();
+            return $this->redirectToRoute("admin_list_user");
+        }
+        return $this->render("admin/user.html.twig", [
+            "title" => "Edit User",
+            "form" => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/api/admin/users/delete",
+     *     name="api_admin_delete_user",
+     *     methods={"POST", "DELETE"})
+     */
+    public function deleteUser(Request $request) {
+        $idArr = json_decode($request->getContent(), true);
+        $userArr = $this->getDoctrine()->getRepository(User::class)->findBy([
+            "id" => $idArr
+        ]);
+        $em = $this->getDoctrine()->getManager();
+        foreach ($userArr as $user) {
+            $em->remove($user);
+            foreach ($user->getRoles() as $role) {
+                $em->remove($role);
+            }
+        }
+        $em->flush();
+        return new JsonResponse([
+            "status" => "success"
+        ]);
     }
 }

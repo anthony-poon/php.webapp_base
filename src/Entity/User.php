@@ -12,6 +12,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\JoinTable;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use App\Entity\UserRole;
@@ -19,6 +20,8 @@ use App\Entity\UserRole;
 /**
  * @ORM\Table(name="app_users")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @UniqueEntity("username", message="Username is taken already")
+ * @UniqueEntity("email", message="Email is registered already")
  */
 class User implements UserInterface, \Serializable {
 
@@ -47,22 +50,24 @@ class User implements UserInterface, \Serializable {
     private $fullName;
 
     /**
-     * @ORM\OneToMany(targetEntity="UserRole", mappedBy="user")
+     * @ORM\ManyToMany(targetEntity="UserRole", inversedBy="user",cascade={"persist"})
+     * @JoinTable(name="users_roles_mapping")
+     * @Assert\Valid()
      */
     private $roles;
 
     /**
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string", length=4096)
      */
     private $password;
 
     /**
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(groups={"registration"})
      * @Assert\Length(
      *     max=4096,
      *     min=5,
      *     maxMessage="Password too long",
-     *     minMessage="Passowrd too short (5 characters or more)"
+     *     minMessage="Password too short (5 characters or more)"
      * )
      */
     private $plainPassword;
@@ -84,32 +89,32 @@ class User implements UserInterface, \Serializable {
 
     public function serialize() {
         return serialize([
-            "id" => $this->id,
-            "username" => $this->username,
-            "password" => $this->password
+            $this->id,
+            $this->username,
+            $this->password
         ]);
     }
 
     public function unserialize($serialized) {
-        $arr = unserialize($serialized, ['allowed_classes' => false]);
-        $this->id = $arr["id"];
-        $this->username = $arr["username"];
-        $this->password = $arr["password"];
+        list($this->id, $this->username, $this->password) = unserialize($serialized, [
+            "allowed_classes" => false
+        ]);
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getRoles() {
+    public function getRoles(): array {
         return $this->roles->toArray();
     }
 
     /**
-     * @param array $role
+     * @param UserRole $role
      * @return User
      */
-    public function setRoles(array $role) {
-        $this->roles = new ArrayCollection($role);
+    public function setRoles(UserRole $role) {
+        $role->setUser($this);
+        $this->roles = new ArrayCollection([$role]);
         return $this;
     }
 

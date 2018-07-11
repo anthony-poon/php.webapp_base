@@ -1,5 +1,4 @@
 var Encore = require('@symfony/webpack-encore');
-const { VueLoaderPlugin } = require('vue-loader');
 
 Encore
     // the project directory where compiled assets will be stored
@@ -7,28 +6,23 @@ Encore
     // the public path used by the web server to access the previous directory
     .setPublicPath('/build')
     .cleanupOutputBeforeBuild()
-    .addStyleEntry("base/login", "./assets/scss/security/login.scss")
-    .addEntry("base/base", ["./assets/js/base.js", "./assets/scss/base/base.scss"])
-    .addEntry("base/data_table_test", [
-        "./assets/js/share/vue_component/RestTable.vue",
-        "./assets/js/data_table_test.js"
+    .addEntry("base/base", [
+        "./assets/js/base.js",
+        "./assets/scss/base/base.scss"
     ])
     .addEntry("base/list_user", [
-        "./assets/js/share/vue_component/RestTable.vue",
         "./assets/js/list_user.js",
-        "./assets/scss/admin/list_user.scss"
     ])
-    .enableVueLoader()
-    .addPlugin(new VueLoaderPlugin())
     .createSharedEntry('vendor', [
         'jquery',
         'bootstrap',
-        'bootstrap/scss/bootstrap.scss'
+        'bootstrap/scss/bootstrap.scss',
+        'datatables.net-bs4/css/dataTables.bootstrap4.css',
+        'datatables.net-buttons-bs4/css/buttons.bootstrap4.css',
+        'datatables.net-select-bs4/css/select.bootstrap4.css'
     ])
     .enableSourceMaps(!Encore.isProduction())
-    .enableReactPreset()
     .enableSassLoader()
-    .enableVueLoader()
     .autoProvidejQuery()
     // uncomment to create hashed filenames (e.g. app.abc123.css)
     // .enableVersioning(Encore.isProduction())

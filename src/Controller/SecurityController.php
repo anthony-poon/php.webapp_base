@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Type\LoginFormType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,9 +10,12 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use App\Service\BaseTemplateHelper;
 
-class SecurityController extends Controller
-{
+class SecurityController extends Controller {
+    public function __construct(BaseTemplateHelper $helper) {
+        $helper->setTitle("Login");
+    }
     /**
      * @Route("/security/login", name="login")
      */

@@ -26,11 +26,15 @@ class InitCommand extends Command {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
+        $this->initUserRole();
         $repo = $this->entityManager->getRepository(User::class);
         $root = $repo->findOneBy(["username" => "root"]);
         if ($root) {
             $output->writeln("Root user exist already. Terminating.");
         } else {
+            $adminRole = $this->entityManager->getRepository(UserRole::class)->findOneBy([
+                "role" => "ROLE_ADMIN"
+            ]);
             $output->writeln("Creating root users");
             $root = new User();
             $root->setUsername("root");
@@ -38,14 +42,33 @@ class InitCommand extends Command {
             $password = md5(random_bytes(10));
             $passwordHash = $this->passwordEncoder->encodePassword($root, $password);
             $root->setPassword($passwordHash);
+            $root->setRoles($adminRole);
             $this->entityManager->persist($root);
-            $role = new UserRole("ROLE_ADMIN");
-            $role->setUser($root);
-            $this->entityManager->persist($role);
             $this->entityManager->flush();
             $output->writeln("Root user created.");
             $output->writeln("Username: root");
             $output->writeln("Password: ".$password);
         }
+    }
+
+    private function initUserRole() {
+        // Get all role that is missing in the database
+        $default = [
+            "ROLE_ADMIN",
+            "ROLE_USER"
+        ];
+        $repo = $this->entityManager->getRepository(UserRole::class);
+        $roleArr = $repo->findBy(["role" => $default]);
+        $existRole = [];
+        foreach ($roleArr as $role) {
+            /* @var \App\Entity\UserRole $role */
+            $existRole[] = $role->getRole();
+        }
+        $missingRole = array_diff($default, $existRole);
+        foreach ($missingRole as $roleName) {
+            $role = new UserRole($roleName);
+            $this->entityManager->persist($role);
+        }
+        $this->entityManager->flush();
     }
 }

@@ -84,13 +84,31 @@ html {
   position: relative;
   z-index: 1;
   #content-wrapper {
-    margin-top: 60px
+    margin-top: 60px;
+    .title {
+      color: #3A99FC;
+      border-left: #3A99FC 2.5px solid;
+      margin-bottom: 20px;
+      padding-top: 6px;
+      padding-left: 20px;
+      padding-bottom: 8px;
+    }
   }
 }
 
 .btn-like {
   transition: color 0.4s;
   cursor: pointer;
+}
+
+.btn-like.p-color{
+  transition: background-color 0.4s;
+  color: #007bff;
+}
+
+.btn-like.p-color:hover{
+  background-color: #007bff;
+  color: white;
 }
 
 .btn-like:hover {
@@ -103,4 +121,37 @@ a.btn-like {
 }
 a.btn-like:hover {
   text-decoration: none;
+}
+
+.dataTables_wrapper.dt-bootstrap4  {
+  .dt-buttons.btn-group {
+    .btn {
+      border-radius: 0;
+      background-color: transparent;
+      border: 0;
+      //border: 4px transparent solid;
+      color: #007bff;
+      font-family: 'Roboto';
+      border-collapse: collapse;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+    .btn.disabled {
+      color: #CCCCCC;
+    }
+    .btn:hover:not(.disabled), .btn:active:not(.disabled){
+      color: white;
+      background-color: #007bff;
+      //border-left: 4px #007bff solid;
+    }
+  }
+  table {
+    tr.selected {
+      transition: background-color 0.4s;
+      background-color: #3A99FC;
+      td {
+        border-color: #3A99FC;
+      }
+    }
+  }
 }

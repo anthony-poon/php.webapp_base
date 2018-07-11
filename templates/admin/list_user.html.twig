@@ -1,7 +1,6 @@
 {% extends 'base/base.html.twig' %}
 
 {% block css %}
-    <link rel="stylesheet" href="{{ asset("build/base/list_user.css") }}">
 {% endblock %}
 
 {% block javascripts %}
@@ -10,22 +9,35 @@
 
 {% block body %}
     <div class="row">
-        <div class="col">
-            <div class="rt-btn-wrapper">
-                <div class="btn-like" id="rt-add-btn">Add</div>
-            </div>
+        <div class="col title">
+            Users
         </div>
     </div>
     <div class="row">
         <div class="col">
-            <div id="rt-table" data-api-url="{{ path("api_admin_list_user") }}">
+            <table class="table table-hover" id="user-table">
+                <thead class="thead-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Username</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for user in userList %}
+                    <tr id="{{ user.id }}">
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.fullName }}</td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
 
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            {{ form(addForm) }}
-        </div>
-    </div>
+{% block modal %}
 {% endblock %}

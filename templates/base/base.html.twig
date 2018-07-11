@@ -37,9 +37,14 @@
             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
             <div class="submenu" id="profile-menu">
                 {% if is_granted('ROLE_ADMIN') %}
-                    <div class="item btn-like">
+                    <a href="{{ path("admin_list_user") }}" class="item btn-like">
                         Administration
-                    </div>
+                    </a>
+                {% endif %}
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <a href="{{ path("profile_edit") }}" class="item btn-like">
+                        Profile
+                    </a>
                 {% endif %}
                 <div class="item btn-like">
                     Profile
@@ -64,7 +69,7 @@
                         </a>
                     {% endfor %}
                 </div>
-                <div class="col" id="content-wrapper">
+                <div class="col pl-5" id="content-wrapper">
                     <div class="row">
                         <div class="col">
                             {% block body %}{% endblock %}
@@ -73,6 +78,13 @@
                 </div>
             </div>
         </div>
+        {% block modal %}{% endblock %}
+        <script>
+            window.Param = {};
+            {% for k, p in template_helper.jsParam %}
+                window.Param["{{ k }}"] = "{{ p }}";
+            {% endfor %}
+        </script>
         <script src="{{ asset("build/manifest.js") }}"></script>
         <script src="{{ asset("build/vendor.js") }}"></script>
         <script src="{{ asset("build/base/base.js") }}"></script>
