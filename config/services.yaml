@@ -2,6 +2,11 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
+    side_menu:
+      home:
+        text: "Home"
+        icon: "home"
+        route: "home"
 
 services:
     # default configuration for services in *this* file

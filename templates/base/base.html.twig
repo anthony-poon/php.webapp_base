@@ -57,16 +57,38 @@
             <div class="row">
                 <div class="col-md-2" id="side-menu">
                     {% for item in template_helper.getSideMenu %}
-                        <a href="{{ item.url }}" class="row btn-like">
-                            <div class="col-4">
-                                {% if item.icon %}
-                                    <i class="material-icons">{{ item.icon }}</i>
-                                {% endif %}
-                            </div>
+                        <div class="row">
                             <div class="col">
-                                {{ item.text }}
+                                <a href="{{ item.url }}" class="menu-item btn-like">
+                                    <span class="icon-wrapper">
+                                    {% if item.icon %}
+                                        <i class="material-icons">{{ item.icon }}</i>
+                                    {% endif %}
+                                    </span>
+                                    <span class="text-wrapper">
+                                        {{ item.text }}
+                                    </span>
+                                </a>
                             </div>
-                        </a>
+                        </div>
+                        {% if item.child is defined %}
+                            {% for child in item.child %}
+                                <div class="row">
+                                    <div class="col">
+                                        <a href="{{ child.url }}" class="menu-item btn-like child">
+                                    <span class="icon-wrapper">
+                                    {% if child.icon %}
+                                        <i class="material-icons">{{ child.icon }}</i>
+                                    {% endif %}
+                                    </span>
+                                            <span class="text-wrapper">
+                                        {{ child.text }}
+                                    </span>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     {% endfor %}
                 </div>
                 <div class="col pl-5" id="content-wrapper">

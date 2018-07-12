@@ -1,20 +1,31 @@
 <?php
 namespace App\Service;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class BaseTemplateHelper {
     private $sideMenu = [];
     private $title = "Web Application";
     private $jsParam = [];
-    public function __construct(RouterInterface $router) {
-        $this->sideMenu = [
-            [
-                "text" => "Home",
-                "icon" => "home",
-                "url" => $router->generate("home")
-            ]
-        ];
+    private $params;
+    public function __construct(ParameterBagInterface $paramsBag, RouterInterface $router) {
+        $this->params = $paramsBag->get("side_menu");
+        foreach ($this->params as $p) {
+            $item = [
+                "text" => $p["text"],
+                "icon" => $p["icon"] ?? null,
+                "url" => $router->generate($p["route"]),
+            ];
+            if ($p["child"] ?? false) {
+                $item["child"][] = [
+                    "text" => $p["child"]["text"],
+                    "icon" => $p["child"]["icon"] ?? null,
+                    "url" => $router->generate($p["child"]["route"])
+                ];
+            }
+            $this->sideMenu[] = $item;
+        }
     }
 
     /**
@@ -24,12 +35,8 @@ class BaseTemplateHelper {
         return $this->sideMenu;
     }
 
-    public function addSideMenuItem(string $text, string $url, string $icon = null) {
-        $this->sideMenu[] = [
-            "text" => $text,
-            "url" => $url,
-            "icon" => $icon
-        ];
+    public function addSideMenuItem(array $item) {
+        $this->sideMenu[] = $item;
     }
 
     /**
