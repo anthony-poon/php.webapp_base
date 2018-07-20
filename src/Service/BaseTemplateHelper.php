@@ -37,6 +37,7 @@ class BaseTemplateHelper {
 
     public function addSideMenuItem(array $item) {
         $this->sideMenu[] = $item;
+        return $this;
     }
 
     /**

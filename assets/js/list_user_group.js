@@ -5,7 +5,7 @@ import "urijs/src/URITemplate";
 
 $(document).ready(function(){
     let table = new CRUDTable({
-        element: "#user-table",
+        element: "#group-table",
         // https://datatables.net/extensions/buttons/custom
         createAction: function(e, dt, node, config) {
             location.href = Param.addPath;

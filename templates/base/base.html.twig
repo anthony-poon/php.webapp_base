@@ -58,7 +58,7 @@
                             <div class="col">
                                 <a href="{{ item.url }}" class="menu-item btn-like">
                                     <span class="icon-wrapper">
-                                    {% if item.icon %}
+                                    {% if item.icon is defined %}
                                         <i class="material-icons">{{ item.icon }}</i>
                                     {% endif %}
                                     </span>
@@ -74,7 +74,7 @@
                                     <div class="col">
                                         <a href="{{ child.url }}" class="menu-item btn-like child">
                                     <span class="icon-wrapper">
-                                    {% if child.icon %}
+                                    {% if child.icon is defined %}
                                         <i class="material-icons">{{ child.icon }}</i>
                                     {% endif %}
                                     </span>

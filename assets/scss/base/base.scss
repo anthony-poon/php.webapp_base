@@ -38,7 +38,7 @@ html {
   border-right: rgba(0, 0, 0, 0.1) 1px solid;
   height: 100vh;
   background-color: white;
-  font-size: 14px;
+  font-size: 12px;
   .menu-item {
     transition: color 0.4s;
     padding-top: 8px;
@@ -48,6 +48,8 @@ html {
       width: 34px;
       display: flex;
       align-items: center;
+      flex-grow: 0;
+      flex-shrink: 0;
       .material-icons {
         font-size: 18px;
       }
@@ -96,6 +98,7 @@ html {
   z-index: 1;
   #content-wrapper {
     margin-top: 60px;
+    margin-bottom: 30px;
     .title {
       color: #3A99FC;
       border-left: #3A99FC 2.5px solid;
@@ -108,22 +111,20 @@ html {
 }
 
 .btn-like {
-  transition: color 0.4s;
+  transition: color 0.4s, background-color 0.4s;
   cursor: pointer;
-}
-
-.btn-like.p-color{
-  transition: background-color 0.4s;
-  color: #007bff;
-}
-
-.btn-like.p-color:hover{
-  background-color: #007bff;
-  color: white;
 }
 
 .btn-like:hover {
   color: #007bff;
+}
+
+.btn-like.text-danger:hover {
+  background-color: #AAAAAA;
+}
+
+.btn-like.text-primary:hover {
+  background-color: #AAAAAA;
 }
 
 a.btn-like {

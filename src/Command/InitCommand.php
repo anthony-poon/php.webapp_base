@@ -2,13 +2,14 @@
 
 namespace App\Command;
 
+use App\Entity\Enum\UserRoleEnum;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use App\Entity\UserRole;
+use App\Entity\DirectoryRole;
 
 class InitCommand extends Command {
     private $entityManager;
@@ -26,49 +27,43 @@ class InitCommand extends Command {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-        $this->initUserRole();
-        $repo = $this->entityManager->getRepository(User::class);
-        $root = $repo->findOneBy(["username" => "root"]);
-        if ($root) {
-            $output->writeln("Root user exist already. Terminating.");
-        } else {
-            $adminRole = $this->entityManager->getRepository(UserRole::class)->findOneBy([
-                "role" => "ROLE_ADMIN"
-            ]);
-            $output->writeln("Creating root users");
-            $root = new User();
-            $root->setUsername("root");
-            $root->setFullName("root");
-            $password = md5(random_bytes(10));
-            $passwordHash = $this->passwordEncoder->encodePassword($root, $password);
-            $root->setPassword($passwordHash);
-            $root->setRoles($adminRole);
-            $this->entityManager->persist($root);
-            $this->entityManager->flush();
-            $output->writeln("Root user created.");
-            $output->writeln("Username: root");
-            $output->writeln("Password: ".$password);
-        }
+		$output->writeln("Creating User Group");
+        $roles = $this->initUserRole();
+		$output->writeln("Creating root users");
+		$root = $this->initRootUser();
+
+		$output->writeln("Root user created.");
+		$output->writeln("Username: root");
+		$output->writeln("Password: ".$root->getPlainPassword());
     }
 
-    private function initUserRole() {
-        // Get all role that is missing in the database
-        $default = [
-            "ROLE_ADMIN",
-            "ROLE_USER"
-        ];
-        $repo = $this->entityManager->getRepository(UserRole::class);
-        $roleArr = $repo->findBy(["role" => $default]);
-        $existRole = [];
-        foreach ($roleArr as $role) {
-            /* @var \App\Entity\UserRole $role */
-            $existRole[] = $role->getRole();
-        }
-        $missingRole = array_diff($default, $existRole);
-        foreach ($missingRole as $roleName) {
-            $role = new UserRole($roleName);
-            $this->entityManager->persist($role);
-        }
-        $this->entityManager->flush();
-    }
+    private function initUserRole(): array {
+    	$roles = [];
+		$default = UserRoleEnum::getValues();
+		foreach ($default as $roleName) {
+			$role = new DirectoryRole($roleName);
+			$this->entityManager->persist($role);
+			$roles[] = $role;
+		}
+		$this->entityManager->flush();
+		return $roles;
+	}
+
+    private function initRootUser(): User {
+		$root = new User();
+		$root->setUsername("root");
+		$root->setFullName("root");
+		$password = md5(random_bytes(10));
+		$root->setPlainPassword($password);
+		$passwordHash = $this->passwordEncoder->encodePassword($root, $password);
+		$root->setPassword($passwordHash);
+		/* @var \App\Entity\DirectoryRole $adminRole */
+		$adminRole = $this->entityManager->getRepository(DirectoryRole::class)->findOneBy([
+			"roleName" => UserRoleEnum::ADMIN
+		]);
+		$root->getRolesCollection()->add($adminRole);
+		$this->entityManager->persist($root);
+		$this->entityManager->flush();
+		return $root;
+	}
 }

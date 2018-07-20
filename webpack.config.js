@@ -10,8 +10,14 @@ Encore
         "./assets/js/base.js",
         "./assets/scss/base/base.scss"
     ])
+    .addEntry("base/create_edit_user", [
+        "./assets/js/share/form.js",
+    ])
     .addEntry("base/list_user", [
         "./assets/js/list_user.js",
+    ])
+    .addEntry("base/list_user_group", [
+        "./assets/js/list_user_group.js",
     ])
     .createSharedEntry('vendor', [
         'jquery',

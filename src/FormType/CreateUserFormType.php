@@ -1,8 +1,9 @@
 <?php
 namespace App\FormType;
 
+use App\Entity\Enum\UserRoleEnum;
 use App\Entity\User;
-use App\Entity\UserRole;
+use App\Entity\DirectoryRole;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -25,19 +26,19 @@ class CreateUserFormType extends AbstractType {
                 "second_options" => array("label" => "Repeat Password"),
             ))
             ->add('email', EmailType::class)
-            ->add("roles", EntityType::class, array(
-                "class" => UserRole::class,
-                "choice_label" => function($role) {
-                    switch ($role->getRole()) {
-                        case "ROLE_ADMIN":
-                            return "Administrator";
-                        case "ROLE_USER":
-                            return "User";
-                        default:
-                            return $role->getRole();
-                    }
-                }
-            ))->add("submit", SubmitType::class);
+			->add("rolesCollection", EntityType::class, array(
+				"class" => DirectoryRole::class,
+				"multiple" => true,
+				"expanded" => true,
+				"choice_label" => function($role) {
+					switch ($role) {
+						case "ROLE_ADMIN":
+							return "Administrator";
+						default:
+							return $role;
+					}
+				}))
+			->add("submit", SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver) {

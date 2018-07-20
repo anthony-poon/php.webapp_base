@@ -1,0 +1,33 @@
+{% block composite_collection_widget %}
+    <div class="row" id="{{ form.vars.id }}">
+        <div class="col collection-container">
+            <div class="row collection-prototype" style="display: none;">
+                <div class="col">
+                    {{ form_widget(prototype) }}
+                </div>
+                <div class="col-auto">
+                    <div class="col-auto">
+                        <i class="material-icons text-danger btn-like">clear</i>
+                    </div>
+                </div>
+            </div>
+            {% for child in form %}
+                <div class="row" id="{{ child.vars.id }}">
+                    <div class="col">
+                        {{ form_widget(child) }}
+                    </div>
+                    <div class="col-auto">
+                        <div class="col-auto">
+                            <i class="material-icons text-danger btn-like" data-collection-delete="#{{ child.vars.id }}">clear</i>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            <i data-collection-add="#{{ form.vars.id }}" class="material-icons text-primary btn-like">add</i>
+        </div>
+    </div>
+{% endblock %}

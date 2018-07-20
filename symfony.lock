@@ -74,6 +74,9 @@
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
+    "marc-mabe/php-enum": {
+        "version": "v3.0.1"
+    },
     "monolog/monolog": {
         "version": "1.23.0"
     },

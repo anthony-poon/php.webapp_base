@@ -9,13 +9,14 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\JoinTable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
-use App\Entity\UserRole;
+use App\Entity\DirectoryRole;
 
 /**
  * @ORM\Table(name="app_users")
@@ -23,15 +24,7 @@ use App\Entity\UserRole;
  * @UniqueEntity("username", message="Username is taken already")
  * @UniqueEntity("email", message="Email is registered already")
  */
-class User implements UserInterface, \Serializable {
-
-    /**
-     * @ORM\Column(type="integer", length=11)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
+class User extends DirectoryObject implements UserInterface, \Serializable {
     /**
      * @ORM\Column(type="string", length=25, unique=true)
      * @Assert\NotBlank()
@@ -48,13 +41,6 @@ class User implements UserInterface, \Serializable {
      * @Assert\NotBlank()
      */
     private $fullName;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="UserRole", inversedBy="user",cascade={"persist"})
-     * @JoinTable(name="users_roles_mapping")
-     * @Assert\Valid()
-     */
-    private $roles;
 
     /**
      * @ORM\Column(type="string", length=4096)
@@ -84,7 +70,7 @@ class User implements UserInterface, \Serializable {
     private $isActive = True;
 
     public function __construct() {
-        $this->roles = new ArrayCollection();
+        parent::__construct();
     }
 
     public function serialize() {
@@ -105,17 +91,7 @@ class User implements UserInterface, \Serializable {
      * @return array
      */
     public function getRoles(): array {
-        return $this->roles->toArray();
-    }
-
-    /**
-     * @param UserRole $role
-     * @return User
-     */
-    public function setRoles(UserRole $role) {
-        $role->setUser($this);
-        $this->roles = new ArrayCollection([$role]);
-        return $this;
+        return parent::getRolesCollection()->toArray();
     }
 
     /**
@@ -157,10 +133,7 @@ class User implements UserInterface, \Serializable {
      * the plain-text password is stored on this object.
      */
     public function eraseCredentials() {
-    }
-
-    public function getId(): ?int {
-        return $this->id;
+    	$this->plainPassword = "";
     }
 
     public function setUsername(string $username): self {
@@ -180,7 +153,6 @@ class User implements UserInterface, \Serializable {
 
     public function setEmail(?string $email): self {
         $this->email = $email;
-
         return $this;
     }
 
@@ -224,4 +196,8 @@ class User implements UserInterface, \Serializable {
         $this->fullName = $fullName;
         return $this;
     }
+
+	public function getName(): string {
+		return $this->getFullName();
+	}
 }
