@@ -2,9 +2,9 @@
 namespace App\Tests\Entity;
 
 use App\Entity\DirectoryGroup;
-use App\Entity\DirectoryObject;
-use App\Entity\DirectoryRelation;
+use App\Entity\SecurityGroup;
 use PHPUnit\Framework\TestCase;
+use App\Entity\User;
 
 class DirectoryGroupTest extends TestCase {
 
@@ -12,7 +12,7 @@ class DirectoryGroupTest extends TestCase {
 		$rtn = [];
 		for ($i = 0; $i < $width && $depth > 0; $i++) {
 			if (rand(0, $depth) <= 1) {
-				$obj = new DirectoryObject();
+				$obj = new User();
 				$rtn[] = $obj;
 				if ($flatten !== null) {
 					$flatten[] = $obj;
@@ -40,98 +40,50 @@ class DirectoryGroupTest extends TestCase {
 			}
 			echo get_class($dirObj)."\n";
 			if ($dirObj instanceof DirectoryGroup) {
-				$this->printDirGrp($dirObj->getMembers()->toArray(), $depth + 1);
+				$this->printDirGrp($dirObj->getChildren()->toArray(), $depth + 1);
 			}
 		}
 	}
 
-    function testGetEffectiveRelation() {
-    	$src = [
-    		"relation_1" => [],
-			"relation_2" => [],
-		];
-		$owner = new DirectoryObject();
-		$flatten = [];
-    	foreach ($src as $relationName => &$arr) {
-    		$width = 5;
-    		$depth = 5;
-			$flatten[$relationName] = [];
-    		$arr = $this->generateDirGroup($width, $depth, $flatten[$relationName]);
-    		foreach ($arr as $a) {
-    			/* @var \App\Entity\DirectoryObject $a */
-    			$r = new DirectoryRelation();
-    			$r->setOwner($owner);
-    			$r->setType($relationName);
-    			$r->setTarget($a);
-    			$owner->getRelations()->add($r);
-			}
-		}
-    	foreach ($flatten as $relationName => $arr) {
-			$haystack = $owner->getEffectiveRelation($relationName);
-			foreach ($arr as $obj) {
-				$this->assertContains($obj, $haystack);
-			}
-		}
-    	/**
-    	foreach ($src as $relateName => $arr) {
-    		echo "Relations $relateName\n";
-    		$this->printDirGrp($arr);
-		}
-		**/
-    }
-
-	function testGetEffectiveInverseRelation() {
-		$src = [
-			"relation_1" => [],
-			"relation_2" => [],
-		];
-		$target = new DirectoryObject();
-		$flatten = [];
-		foreach ($src as $relationName => &$arr) {
-			$width = 5;
-			$depth = 5;
-			$flatten[$relationName] = [];
-			$arr = $this->generateDirGroup($width, $depth, $flatten[$relationName]);
-			foreach ($arr as $a) {
-				/* @var \App\Entity\DirectoryObject $a */
-				$r = new DirectoryRelation();
-				$r->setOwner($a);
-				$r->setType($relationName);
-				$r->setTarget($target);
-				$target->getInverseRelations()->add($r);
-			}
-		}
-		foreach ($flatten as $relationName => $arr) {
-			$haystack = $target->getEffectiveRelation($relationName, true);
-			foreach ($arr as $obj) {
-				$this->assertContains($obj, $haystack);
-			}
-		}
+	public function testGetParentRecursive() {
+		$grp1 = new DirectoryGroup();
+		$grp1->setName("grp_1");
+		$grp2 = new DirectoryGroup();
+		$grp2->setName("grp_2");
+		$grp3 = new DirectoryGroup();
+		$grp3->setName("grp_3");
+		// grp_1 is parent of grp_2
+		$grp2->getParents()->add($grp1);
+		// grp_2 is parent of grp_2
+		$grp3->getParents()->add($grp2);
+		// grp_2 recursively point to self, assert no stack overflow
+		$grp2->getParents()->add($grp3);
+		// grp_1 recursively point to grp_2, assert no stack overflow
+		$grp1->getParents()->add($grp2);
+		$flattened = $grp3->getParentsRecursive();
+		$this->assertContains($grp1, $flattened, "", "", true);
+		$this->assertContains($grp2, $flattened, "", "", true);
+		// assert the final result do not have reference to self
+		$this->assertNotContains($grp3, $flattened, "", "", true);
 	}
 
-    function testArrayAccess() {
-		$u1 = new DirectoryObject();
-		$subG1 = new DirectoryGroup();
-		$subU1 = new DirectoryObject();
-		$subG1[0] = $subU1;
-		$grp = new DirectoryGroup();
-		$grp[0] = $u1;
-		$grp[1] = $subG1;
-		$this->assertSame($u1, $grp[0]);
-		$this->assertSame($subU1, $grp[1][0]);
+	public function testGetSiteToken() {
+		$grp1 = new SecurityGroup();
+		$grp1->setSiteToken("token_1")->setName("grp_1");
+		$grp2 = new SecurityGroup();
+		$grp2->setSiteToken("token_2")->setName("grp_2");
+		$grp3 = new SecurityGroup();
+		$grp3->setSiteToken("token_3")->setName("grp_3");
+		$grp4 = new SecurityGroup();
+		$grp4->setSiteToken("token_4")->setName("grp_4");
+		$grp3->getParents()->add($grp1);
+		$grp3->getParents()->add($grp2);
+		$grp4->getParents()->add($grp3);
+		$this->assertContains($grp4->getSiteToken(), [
+			"token_1",
+			"token_2",
+			"token_3",
+			"token_4",
+		]);
 	}
-
-	function testTraversable() {
-		$g = new DirectoryGroup();
-		$r = rand(5,10);
-		for ($i = 0; $i < $r; $i++) {
-			$g[] = new DirectoryObject();
-		}
-		$count = 0;
-		foreach ($g as $obj) {
-			$count++;
-		}
-		$this->assertEquals($count, count($g));
-	}
-
 }

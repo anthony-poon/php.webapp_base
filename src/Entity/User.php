@@ -9,14 +9,11 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\ManyToMany;
-use Doctrine\ORM\Mapping\JoinTable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
-use App\Entity\DirectoryRole;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @ORM\Table(name="app_users")
@@ -69,10 +66,12 @@ class User extends DirectoryObject implements UserInterface, \Serializable {
      */
     private $isActive = True;
 
-    public function __construct() {
-        parent::__construct();
-    }
-
+	/**
+	 * Reference to the security group which this object is an immediate member
+	 * @var Collection
+	 * @ORM\ManyToMany(targetEntity="App\Entity\SecurityGroup", mappedBy="children")
+	 */
+	private $securityGroups;
     public function serialize() {
         return serialize([
             $this->id,
@@ -91,7 +90,17 @@ class User extends DirectoryObject implements UserInterface, \Serializable {
      * @return array
      */
     public function getRoles(): array {
-        return parent::getRolesCollection()->toArray();
+    	// Cannot use this->getSecurityGroup because it only get immediate parents
+    	$parents = new ArrayCollection($this->getParentsRecursive());
+    	$parents = $parents->filter(function(DirectoryGroup $g) {
+    		return $g instanceof SecurityGroup;
+		});
+    	$rtn = [];
+    	foreach ($parents as $g) {
+    		/* @var SecurityGroup $g */
+			$rtn[] = $g->getSiteToken();
+		}
+        return $rtn;
     }
 
     /**
@@ -197,7 +206,27 @@ class User extends DirectoryObject implements UserInterface, \Serializable {
         return $this;
     }
 
-	public function getName(): string {
-		return $this->getFullName();
+    /**
+     * @return Collection
+     */
+    public function getSecurityGroups(): ?Collection {
+		return $this->securityGroups;
+	}
+
+	public function setSecurityGroups($groups): User {
+    	if ($groups instanceof Collection) {
+			$this->securityGroups = $groups;
+		} else {
+    		$groups = new ArrayCollection($groups);
+		}
+    	return $this;
+	}
+
+	public function getFriendlyName(): string {
+		return $this->fullName;
+	}
+
+	public function getFriendlyClassName(): string {
+		return "User";
 	}
 }

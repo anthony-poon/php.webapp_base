@@ -1,23 +1,23 @@
 <?php
-namespace App\FormType;
+namespace App\FormType\Form\Users;
 
+use App\Entity\SecurityGroup;
 use App\Entity\User;
-use App\Entity\DirectoryRole;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-class EditProfileFormType extends AbstractType {
+class EditUsersForm extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options) {
         /* @var User $user */
-        $builder->add("fullName", TextType::class)
+        $builder->add("username", TextType::class)
+            ->add("fullName", TextType::class)
             ->add("plainPassword", RepeatedType::class, array(
                 "type" => PasswordType::class,
                 "required" => false,
@@ -32,6 +32,12 @@ class EditProfileFormType extends AbstractType {
                 ),
             ))
             ->add('email', EmailType::class)
+			->add('securityGroups', EntityType::class, [
+				"expanded" => true,
+				"multiple" => true,
+				"class" => SecurityGroup::class,
+				"choice_label" => "name"
+			])
             ->add("submit", SubmitType::class);
     }
 

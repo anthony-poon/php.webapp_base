@@ -20,6 +20,7 @@
                 <tr>
                     <th>#</th>
                     <th>Group Name</th>
+                    <th>Group Type</th>
                     <th>Member Count</th>
                 </tr>
                 </thead>
@@ -27,8 +28,9 @@
                 {% for grp in grpList %}
                     <tr id="{{ grp.id }}">
                         <td>{{ grp.id }}</td>
-                        <td>{{ grp.groupName }}</td>
-                        <td>{{ grp.getMembers().toArray()|length }}</td>
+                        <td>{{ grp.getName() }}</td>
+                        <td>{{ grp.getFriendlyClassName() }}</td>
+                        <td>{{ grp.getChildren().toArray()|length }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

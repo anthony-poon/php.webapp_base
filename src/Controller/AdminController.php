@@ -2,16 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\SecurityGroup;
 use App\Entity\User;
-use App\Entity\DirectoryRelation;
 use App\Entity\DirectoryGroup;
-use App\Entity\DirectoryRole;
-use App\FormType\CreateUserFormType;
-use App\FormType\EditUserFormType;
-use App\FormType\UserGroupFormType;
+use App\FormType\Form\UserGroups\ChooseUserGroupsTypeForm;
+use App\FormType\Form\UserGroups\CreateDirectoryGroupsForm;
+use App\FormType\Form\UserGroups\SecurityGroupForm;
+use App\FormType\Form\Users\CreateUsersForm;
+use App\FormType\Form\Users\EditUsersForm;
+use App\FormType\Form\UserGroups\EditDirectoryGroupsForm;
 use App\Service\BaseTemplateHelper;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Query\Expr\Base;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,7 +60,7 @@ class AdminController extends Controller {
      */
     public function createUser(Request $request, UserPasswordEncoderInterface $encoder) {
         $user = new User();
-        $form = $this->createForm(CreateUserFormType::class, $user);
+        $form = $this->createForm(CreateUsersForm::class, $user);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             /* @var \App\Entity\User $user */
@@ -87,7 +87,7 @@ class AdminController extends Controller {
         if (!$user) {
             throw new \Exception("Invalid user id.");
         }
-        $form = $this->createForm(EditUserFormType::class, $user);
+        $form = $this->createForm(EditUsersForm::class, $user);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             /* @var \App\Entity\User $user */
@@ -99,7 +99,6 @@ class AdminController extends Controller {
             }
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
-			$em->persist($user->getRelations());
             $em->flush();
             return $this->redirectToRoute("admin_list_user");
         }
@@ -129,17 +128,40 @@ class AdminController extends Controller {
 	 * @Route("/admin/user-groups/create", name="admin_create_user_group")
 	 */
 	public function createUserGroup(BaseTemplateHelper $helper, Request $request) {
-		$form = $this->createForm(UserGroupFormType::class);
-		$form->handleRequest($request);
-		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
-			$em = $this->getDoctrine()->getManager();
-			$em->persist($data);
-			$em->flush();
-			$this->redirectToRoute("admin_list_user_group");
+		$formType = $request->get("t");
+		$em = $this->getDoctrine()->getManager();
+		switch ($formType) {
+			case "directory_group":
+				$form = $this->createForm(CreateDirectoryGroupsForm::class);
+				$form->handleRequest($request);
+				if ($form->isSubmitted() && $form->isValid()) {
+					$group = $form->getData();
+					$em->persist($group);
+					$em->flush();
+				}
+				return $this->redirectToRoute("admin_list_user_group");
+				break;
+			case "security_group":
+				$form = $this->createForm(SecurityGroup::class);
+				$form->handleRequest($request);
+				if ($form->isSubmitted() && $form->isValid()) {
+					$group = $form->getData();
+					$em->persist($group);
+					$em->flush();
+				}
+				return $this->redirectToRoute("admin_list_user_group");
+				break;
+			default:
+				$form = $this->createForm(ChooseUserGroupsTypeForm::class);
+				$form->handleRequest($request);
+				if ($form->isSubmitted() && $form->isValid()) {
+					$formType = $form->getData()["groupType"];
+					return $this->redirectToRoute("admin_create_user_group", ["t" => $formType]);
+				}
+				break;
 		}
 		return $this->render("admin/create_edit_form.html.twig", [
-			"title" => "Create User Group",
+			"title" => "Create Group",
 			"form" => $form->createView()
 		]);
 	}
@@ -148,19 +170,34 @@ class AdminController extends Controller {
 	 * @Route("/admin/user-groups/{id}", name="admin_edit_user_group", requirements={"id"="\d+"})
 	 */
 	public function editUserGroup(BaseTemplateHelper $helper, Request $request, int $id) {
-		$grpRepo = $this->getDoctrine()->getRepository(DirectoryGroup::class);
-		$grp = $grpRepo->find($id);
-		$form = $this->createForm(UserGroupFormType::class, $grp);
-		$form->handleRequest($request);
-		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
-			$em = $this->getDoctrine()->getManager();
-			$em->persist($data);
-			$em->flush();
-			$this->redirectToRoute("admin_list_user_group");
+		$em = $this->getDoctrine()->getManager();
+		$groupRepo = $this->getDoctrine()->getRepository(DirectoryGroup::class);
+		$group = $groupRepo->find($id);
+		switch (get_class($group)) {
+			case SecurityGroup::class:
+				$form = $this->createForm(SecurityGroupForm::class, $group);
+				$form->handleRequest($request);
+				if ($form->isSubmitted() && $form->isValid()) {
+					$group = $form->getData();
+					$em->persist($group);
+					$em->flush();
+					$this->redirectToRoute("admin_list_user_group");
+				}
+				break;
+			// Catch all
+			case DirectoryGroup::class:
+				$form = $this->createForm(EditDirectoryGroupsForm::class, $group);
+				$form->handleRequest($request);
+				if ($form->isSubmitted() && $form->isValid()) {
+					$group = $form->getData();
+					$em->persist($group);
+					$em->flush();
+					$this->redirectToRoute("admin_list_user_group");
+				}
+				break;
 		}
 		return $this->render("admin/create_edit_form.html.twig", [
-			"title" => "Edit User Group",
+			"title" => "Edit Group",
 			"form" => $form->createView()
 		]);
 	}

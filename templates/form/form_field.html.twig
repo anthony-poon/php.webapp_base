@@ -1,7 +1,10 @@
+{% extends "bootstrap_4_horizontal_layout.html.twig" %}
+
 {% block composite_collection_widget %}
+    {% spaceless %}
     <div class="row" id="{{ form.vars.id }}">
         <div class="col collection-container">
-            <div class="row collection-prototype" style="display: none;">
+            <div class="row mb-3 collection-prototype" style="display: none;">
                 <div class="col">
                     {{ form_widget(prototype) }}
                 </div>
@@ -12,7 +15,7 @@
                 </div>
             </div>
             {% for child in form %}
-                <div class="row" id="{{ child.vars.id }}">
+                <div class="row mb-3" id="{{ child.vars.id }}">
                     <div class="col">
                         {{ form_widget(child) }}
                     </div>
@@ -30,4 +33,5 @@
             <i data-collection-add="#{{ form.vars.id }}" class="material-icons text-primary btn-like">add</i>
         </div>
     </div>
+    {% endspaceless %}
 {% endblock %}

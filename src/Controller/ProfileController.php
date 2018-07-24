@@ -2,8 +2,7 @@
 
 namespace App\Controller;
 
-use App\FormType\EditProfileFormType;
-use App\FormType\EditUserFormType;
+use App\FormType\Form\Users\EditSelfUsersForm;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +14,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request) {
         $self = $this->getUser();
-        $form = $this->createForm(EditProfileFormType::class, $self);
+        $form = $this->createForm(EditSelfUsersForm::class, $self);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $self = $form->getData();

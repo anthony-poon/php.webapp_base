@@ -6,8 +6,7 @@
  * Time: 5:35 PM
  */
 
-namespace App\FormType;
-
+namespace App\FormType\Component;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
