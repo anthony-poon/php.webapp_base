@@ -8,7 +8,7 @@
 
 namespace App\FormType\Form\UserGroups;
 
-use App\Entity\DirectoryObject;
+use App\Entity\Base\DirectoryObject;
 use App\FormType\Component\CompositeCollectionType;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;

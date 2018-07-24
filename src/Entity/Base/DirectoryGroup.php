@@ -1,5 +1,5 @@
 <?php
-namespace App\Entity;
+namespace App\Entity\Base;
 
 use App\FormType\Constraint\UniqueCollectionValue;
 use Doctrine\Common\Collections\ArrayCollection;

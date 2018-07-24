@@ -6,7 +6,7 @@
  * Time: 5:09 PM
  */
 
-namespace App\Entity;
+namespace App\Entity\Base;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -69,7 +69,7 @@ class User extends DirectoryObject implements UserInterface, \Serializable {
 	/**
 	 * Reference to the security group which this object is an immediate member
 	 * @var Collection
-	 * @ORM\ManyToMany(targetEntity="App\Entity\SecurityGroup", mappedBy="children")
+	 * @ORM\ManyToMany(targetEntity="SecurityGroup", mappedBy="children")
 	 */
 	private $securityGroups;
     public function serialize() {

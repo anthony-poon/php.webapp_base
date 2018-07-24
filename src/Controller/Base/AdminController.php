@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Base;
 
-use App\Entity\SecurityGroup;
-use App\Entity\User;
-use App\Entity\DirectoryGroup;
+use App\Entity\Base\SecurityGroup;
+use App\Entity\Base\User;
+use App\Entity\Base\DirectoryGroup;
 use App\FormType\Form\UserGroups\ChooseUserGroupsTypeForm;
 use App\FormType\Form\UserGroups\CreateDirectoryGroupsForm;
 use App\FormType\Form\UserGroups\SecurityGroupForm;
@@ -14,7 +14,6 @@ use App\FormType\Form\UserGroups\EditDirectoryGroupsForm;
 use App\Service\BaseTemplateHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\RouterInterface;
@@ -63,7 +62,7 @@ class AdminController extends Controller {
         $form = $this->createForm(CreateUsersForm::class, $user);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /* @var \App\Entity\User $user */
+            /* @var \App\Entity\Base\User $user */
             $user = $form->getData();
             $pw = $encoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($pw);
@@ -90,7 +89,7 @@ class AdminController extends Controller {
         $form = $this->createForm(EditUsersForm::class, $user);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /* @var \App\Entity\User $user */
+            /* @var \App\Entity\Base\User $user */
             $user = $form->getData();
             $pw = $user->getPlainPassword();
             if ($pw) {

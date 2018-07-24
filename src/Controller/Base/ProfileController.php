@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Base;
 
 use App\FormType\Form\Users\EditSelfUsersForm;
 use Symfony\Component\Routing\Annotation\Route;

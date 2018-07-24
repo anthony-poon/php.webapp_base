@@ -1,10 +1,10 @@
 <?php
 namespace App\Tests\Entity;
 
-use App\Entity\DirectoryGroup;
-use App\Entity\SecurityGroup;
+use App\Entity\Base\DirectoryGroup;
+use App\Entity\Base\SecurityGroup;
 use PHPUnit\Framework\TestCase;
-use App\Entity\User;
+use App\Entity\Base\User;
 
 class DirectoryGroupTest extends TestCase {
 
@@ -23,7 +23,7 @@ class DirectoryGroupTest extends TestCase {
 		}
 		foreach ($rtn as &$dirObj) {
 			if ($dirObj instanceof DirectoryGroup) {
-				/* @var \App\Entity\DirectoryGroup $DirObj */
+				/* @var \App\Entity\Base\DirectoryGroup $DirObj */
 				$subMember = $this->generateDirGroup(rand(1, $width), $depth - 1, $flatten);
 				foreach ($subMember as $m) {
 					$dirObj->getMembers()->add($m);

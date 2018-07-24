@@ -6,7 +6,7 @@
  * Time: 10:34 AM
  */
 
-namespace App\Entity;
+namespace App\Entity\Base;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,7 +14,7 @@ use Doctrine\Common\Collections\Collection;
 
 /**
  * Class DirectoryObject
- * @package App\Entity
+ * @package App\Entity\Base
  * @ORM\Table(name="directory_objects")
  * @ORM\Entity()
  * @ORM\InheritanceType("JOINED")
@@ -31,7 +31,7 @@ abstract class DirectoryObject {
 
 	/**
 	 * @var Collection
-	 * @ORM\ManyToMany(targetEntity="App\Entity\DirectoryGroup", mappedBy="children")
+	 * @ORM\ManyToMany(targetEntity="DirectoryGroup", mappedBy="children")
 	 */
 	private $parents;
 
@@ -56,7 +56,7 @@ abstract class DirectoryObject {
 	public function getParentsRecursive(): array {
 		$rtn = [];
 		foreach ($this->parents as $p) {
-			/* @var \App\Entity\DirectoryGroup $p */
+			/* @var \App\Entity\Base\DirectoryGroup $p */
 			$rtn[] = $p;
 			$this->unpackDirectoryGroup($p, $rtn);
 		}
@@ -68,7 +68,7 @@ abstract class DirectoryObject {
 			$rtn = [];
 		}
 		foreach ($group->parents as $p) {
-			/* @var \App\Entity\DirectoryGroup $p */
+			/* @var \App\Entity\Base\DirectoryGroup $p */
 			if (!in_array($p, $rtn) && $p !== $this) {
 				$rtn[] = $p;
 				if ($p->getParents()->count() > 0) {

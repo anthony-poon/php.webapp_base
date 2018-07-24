@@ -2,8 +2,8 @@
 
 namespace App\Command;
 
-use App\Entity\SecurityGroup;
-use App\Entity\User;
+use App\Entity\Base\SecurityGroup;
+use App\Entity\Base\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

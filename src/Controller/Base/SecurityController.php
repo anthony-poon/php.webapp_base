@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Base;
 
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;

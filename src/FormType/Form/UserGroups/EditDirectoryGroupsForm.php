@@ -8,8 +8,8 @@
 
 namespace App\FormType\Form\UserGroups;
 
-use App\Entity\DirectoryGroup;
-use App\Entity\DirectoryObject;
+use App\Entity\Base\DirectoryGroup;
+use App\Entity\Base\DirectoryObject;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -21,7 +21,7 @@ use App\FormType\Component\CompositeCollectionType;
 
 class EditDirectoryGroupsForm extends AbstractType {
 	public function buildForm(FormBuilderInterface $builder, array $options) {
-		/* @var \App\Entity\DirectoryObject $dataObj */
+		/* @var \App\Entity\Base\DirectoryObject $dataObj */
 		$dataObj = $builder->getData();
 		$builder->add("name", TextType::class)
 			->add("children", CompositeCollectionType::class, [

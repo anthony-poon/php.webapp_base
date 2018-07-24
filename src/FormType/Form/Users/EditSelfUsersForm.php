@@ -8,9 +8,8 @@
 
 namespace App\FormType\Form\Users;
 
-use App\Entity\SecurityGroup;
-use App\Entity\User;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Entity\Base\SecurityGroup;
+use App\Entity\Base\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
