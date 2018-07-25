@@ -25,13 +25,7 @@ $(document).ready(function(){
                 console.log(ajax);
                 alert("Deletion failed")
             })
-        },
-        btn: [{
-            text: "TESTING",
-            action: () => {
-                alert("asdf")
-            }
-        }]
+        }
     });
 
     table.init();

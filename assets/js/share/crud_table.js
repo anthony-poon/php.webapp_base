@@ -40,6 +40,9 @@ export default class CRUDTable {
                 action: this.deleteAction
             })
         }
+        $.each(options.btn, (k, v)=> {
+            this.btn.push(v)
+        })
     }
 
     init() {
