@@ -1,21 +1,30 @@
 <?php
 namespace App\Service;
 
+use App\Entity\SiteUser;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class BaseTemplateHelper {
     private $sideMenu = [];
     private $title = "Web Application";
     private $jsParam = [];
-    private $params;
-
-    public function __construct(ParameterBagInterface $paramsBag, RouterInterface $router) {
-        $this->sideMenu = [
+	private $user = null;
+    public function __construct(ParameterBagInterface $paramsBag, RouterInterface $router, TokenStorageInterface $tokenStorage) {
+		$token = $tokenStorage->getToken();
+		if ($token) {
+			$this->user = $token->getUser();
+		}
+    	$this->sideMenu = [
         	[
         		"text" => "Home",
 				"icon" => "home",
 				"url" => $router->generate("home")
+			], [
+				"text" => "Friend List",
+				"url" => $router->generate("social_list_friend"),
+				"isVisible" => $this->user instanceof SiteUser
 			]
 		];
     }
