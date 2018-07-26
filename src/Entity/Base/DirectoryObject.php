@@ -15,7 +15,7 @@ use Doctrine\Common\Collections\Collection;
 /**
  * Class DirectoryObject
  * @package App\Entity\Base
- * @ORM\Table(name="directory_objects")
+ * @ORM\Table(name="directory_object")
  * @ORM\Entity()
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="object_type", type="string")

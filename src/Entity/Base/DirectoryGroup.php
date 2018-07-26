@@ -7,14 +7,14 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="directory_groups")
+ * @ORM\Table(name="directory_group")
  * @ORM\Entity
  */
 class DirectoryGroup extends DirectoryObject {
 	/**
 	 * @var Collection
 	 * @ORM\ManyToMany(targetEntity="DirectoryObject", inversedBy="parents")
-	 * @ORM\JoinTable(name="directory_groups_mapping")
+	 * @ORM\JoinTable(name="directory_group_mapping")
 	 * @UniqueCollectionValue(message="Duplicated members")
 	 */
 	private $children;
