@@ -201,13 +201,6 @@ class AdminController extends Controller {
 		]);
 	}
 
-	/**
-	 * @Route("/admin/user-relation", name="admin_create_user_relation", requirements={"id"="\d+"})
-	 */
-	public function listUserRelation() {
-
-	}
-
     /**
      * @Route("/api/admin/users/delete",
      *     name="api_admin_delete_user",
