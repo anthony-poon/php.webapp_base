@@ -22,7 +22,7 @@ class ProfileController extends Controller
             $em->persist($self);
             $em->flush();
         }
-        return $this->render('profile/edit_profile.html.twig', [
+        return $this->render('render/simple_form.html.twig', [
             "title" => "Profile Management",
             "form" => $form->createView()
         ]);

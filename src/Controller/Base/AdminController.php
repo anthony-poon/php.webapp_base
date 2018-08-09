@@ -14,6 +14,7 @@ use App\FormType\Form\UserGroups\EditDirectoryGroupsForm;
 use App\Service\BaseTemplateHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\RouterInterface;
@@ -44,12 +45,12 @@ class AdminController extends Controller {
     public function listUser(BaseTemplateHelper $helper, RouterInterface $router) {
         $repo = $this->getDoctrine()->getRepository(User::class);
         $userList = $repo->findAll();
-        $helper->setJsParam([
+        $helper->addJsParam([
             "addPath" => $this->generateUrl("admin_create_user"),
             "editPath" => $router->getRouteCollection()->get("admin_edit_user")->getPath(),
             "deletePath" => $router->getRouteCollection()->get("api_admin_delete_user")->getPath()
         ]);
-        return $this->render('admin/list_user.html.twig', [
+        return $this->render('render/admin/list_user.html.twig', [
             "userList" => $userList
         ]);
     }
@@ -71,7 +72,7 @@ class AdminController extends Controller {
             $em->flush();
             return $this->redirectToRoute("admin_list_user");
         }
-        return $this->render("admin/create_edit_form.html.twig", [
+        return $this->render("render/simple_form.html.twig", [
             "title" => "Create User",
             "form" => $form->createView()
         ]);
@@ -84,7 +85,7 @@ class AdminController extends Controller {
         $repo = $this->getDoctrine()->getRepository(User::class);
         $user = $repo->find($id);
         if (!$user) {
-            throw new \Exception("Invalid user id.");
+            throw new HttpException(404, "Unable to locate entity.");
         }
         $form = $this->createForm(EditUsersForm::class, $user);
         $form->handleRequest($request);
@@ -101,7 +102,7 @@ class AdminController extends Controller {
             $em->flush();
             return $this->redirectToRoute("admin_list_user");
         }
-        return $this->render("admin/create_edit_form.html.twig", [
+        return $this->render("render/simple_form.html.twig", [
             "title" => "Edit User",
             "form" => $form->createView()
         ]);
@@ -113,12 +114,12 @@ class AdminController extends Controller {
     public function listUserGroup(BaseTemplateHelper $helper, RouterInterface $router) {
         $grpRepo = $this->getDoctrine()->getRepository(DirectoryGroup::class);
         $grpList = $grpRepo->findAll();
-        $helper->setJsParam([
+        $helper->addJsParam([
         	"addPath" => $this->generateUrl("admin_create_user_group"),
 			"editPath" => $router->getRouteCollection()->get("admin_edit_user_group")->getPath(),
 			"deletePath" => $router->getRouteCollection()->get("api_admin_delete_user_group")->getPath()
 		]);
-        return $this->render("admin/list_user_group.html.twig", [
+        return $this->render("render/admin/list_user_group.html.twig", [
         	"grpList" => $grpList
 		]);
     }
@@ -159,7 +160,7 @@ class AdminController extends Controller {
 				}
 				break;
 		}
-		return $this->render("admin/create_edit_form.html.twig", [
+		return $this->render("render/simple_form.html.twig", [
 			"title" => "Create Group",
 			"form" => $form->createView()
 		]);
@@ -195,7 +196,7 @@ class AdminController extends Controller {
 				}
 				break;
 		}
-		return $this->render("admin/create_edit_form.html.twig", [
+		return $this->render("render/simple_form.html.twig", [
 			"title" => "Edit Group",
 			"form" => $form->createView()
 		]);

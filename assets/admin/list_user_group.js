@@ -1,4 +1,4 @@
-import CRUDTable from './share/crud_table';
+import CRUDTable from '../share/crud_table';
 import axios from 'axios';
 import * as URI from 'urijs';
 import "urijs/src/URITemplate";

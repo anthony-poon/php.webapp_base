@@ -7,7 +7,10 @@
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="{{ asset("build/vendor.css") }}">
-        <link rel="stylesheet" href="{{ asset("build/base/base.css") }}">
+        <link rel="stylesheet" href="{{ asset("build/base.css") }}">
+        {% for css in template_helper.getCss %}
+            <link rel="stylesheet" href="{{ asset(css) }}">
+        {% endfor %}
         {% block css %}{% endblock %}
     </head>
     <body>
@@ -106,7 +109,10 @@
         </script>
         <script src="{{ asset("build/manifest.js") }}"></script>
         <script src="{{ asset("build/vendor.js") }}"></script>
-        <script src="{{ asset("build/base/base.js") }}"></script>
+        <script src="{{ asset("build/base.js") }}"></script>
+        {% for js in template_helper.getJs %}
+            <script src="{{ asset(js) }}"></script>
+        {% endfor %}
         {% block javascripts %}{% endblock %}
     </body>
 </html>

@@ -1,4 +1,7 @@
 global.$ = global.jQuery = require('jquery');
+import CRUDTable from "./share/crud_table";
+import axios from 'axios';
+
 
 $(document).ready(function(){
     // Toggle navbar menu via selector specified in data-submenu attr

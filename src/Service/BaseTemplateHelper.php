@@ -11,7 +11,9 @@ class BaseTemplateHelper {
     private $title = "Web Application";
     private $jsParam = [];
 	private $user = null;
-    public function __construct(ParameterBagInterface $paramsBag, RouterInterface $router, TokenStorageInterface $tokenStorage) {
+	private $css = [];
+	private $js = [];
+    public function __construct(RouterInterface $router, TokenStorageInterface $tokenStorage) {
 		$token = $tokenStorage->getToken();
 		if ($token) {
 			$this->user = $token->getUser();
@@ -21,10 +23,6 @@ class BaseTemplateHelper {
         		"text" => "Home",
 				"icon" => "home",
 				"url" => $router->generate("home")
-			], [
-				"text" => "Friend List",
-				"url" => $router->generate("social_list_friend"),
-				"isVisible" => $this->user instanceof SiteUser
 			]
 		];
     }
@@ -68,9 +66,34 @@ class BaseTemplateHelper {
      * @param array $jsParam
      * @return BaseTemplateHelper
      */
-    public function setJsParam(array $jsParam): BaseTemplateHelper {
-        $this->jsParam = $jsParam;
+    public function addJsParam(array $jsParam): BaseTemplateHelper {
+        $this->jsParam = array_merge($jsParam, $this->jsParam);
         return $this;
     }
+
+    public function addJs($js): BaseTemplateHelper {
+    	$this->js[] = $js;
+    	return $this;
+	}
+
+	public function addCss($css): BaseTemplateHelper {
+    	$this->css[] = $css;
+    	return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getCss(): array {
+		return $this->css;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getJs(): array {
+		return $this->js;
+	}
+
 
 }

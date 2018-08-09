@@ -11,14 +11,14 @@ class DefaultController extends Controller {
      * @Route("/", name="home")
      */
     public function index(BaseTemplateHelper $template) {
-        return $this->render('default/index.html.twig');
+        return $this->render('render/index.html.twig');
     }
 
     /**
      * @Route("/member", name="member_home")
      */
     public function member(BaseTemplateHelper $template) {
-        return $this->render('default/index.html.twig');
+        return $this->render('render/index.html.twig');
     }
 }
 
