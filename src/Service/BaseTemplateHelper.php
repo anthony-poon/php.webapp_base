@@ -22,7 +22,7 @@ class BaseTemplateHelper {
         	[
         		"text" => "Home",
 				"icon" => "home",
-				"url" => $router->generate("home")
+				"url" => $router->generate("home"),
 			]
 		];
     }
