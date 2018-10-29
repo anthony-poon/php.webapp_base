@@ -16,6 +16,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\Collection;
 
 /**
+ * Class User
  * @ORM\Table(name="app_user")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @UniqueEntity("username", message="Username is taken already")
@@ -69,7 +70,7 @@ class User extends DirectoryObject implements UserInterface, \Serializable {
 	/**
 	 * Reference to the security group which this object is an immediate member
 	 * @var Collection
-	 * @ORM\ManyToMany(targetEntity="SecurityGroup", mappedBy="children")
+	 * @ORM\ManyToMany(targetEntity="SecurityGroup", mappedBy="children", cascade={"persist"})
 	 */
 	private $securityGroups;
     public function serialize() {

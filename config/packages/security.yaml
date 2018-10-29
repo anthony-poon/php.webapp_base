@@ -10,11 +10,13 @@ security:
             anonymous: ~
             provider: db_provider
             user_checker: App\Service\UserChecker
+            json_login:
+                check_path: security_ajax_login
             form_login:
                 username_parameter: "form[username]"
                 password_parameter: "form[password]"
-                login_path: login
-                check_path: login
+                login_path: security_login
+                check_path: security_login
             logout:
                 path:   /logout
                 target: /

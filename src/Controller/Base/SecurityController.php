@@ -17,9 +17,10 @@ class SecurityController extends Controller {
         $helper->setTitle("Login");
     }
     /**
-     * @Route("/security/login", name="login")
+     * @Route("/security/login", name="security_login")
      */
     public function login(Request $request, AuthenticationUtils $authenticationUtils) {
+        $redirect = $request->query->get("redirect");
         $form = $this->createFormBuilder()
             ->add("username", TextType::class, array(
                 "attr" => array(
@@ -39,6 +40,8 @@ class SecurityController extends Controller {
             "form" => $form->createView(),
             "last_username" => $lastUsername,
             "error" => $error,
+            "redirect" => $redirect
         ));
     }
+
 }

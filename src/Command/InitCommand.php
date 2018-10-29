@@ -44,15 +44,25 @@ class InitCommand extends Command {
 		$grpRepo = $this->entityManager->getRepository(SecurityGroup::class);
 		$adminGroup = $grpRepo->findOneBy(["siteToken" => "ROLE_ADMIN"]);
 		if (empty($adminGroup)) {
-			$output->writeln("Creating User Group");
+			$output->writeln("Creating Admin Group");
 			$adminGroup = new SecurityGroup();
 		}
 		$adminGroup->setName("Administrator Group");
 		$adminGroup->setSiteToken("ROLE_ADMIN");
-		if (!$adminGroup->getChildren()->contains($root)){
-			$adminGroup->addChild($root);
+
+        $userGroup = $grpRepo->findOneBy(["siteToken" => "ROLE_USER"]);
+        if (empty($userGroup)) {
+            $output->writeln("Creating User Group");
+            $userGroup = new SecurityGroup();
+        }
+        $userGroup->setName("User Group");
+        $userGroup->setSiteToken("ROLE_USER");
+
+		if (!$userGroup->getChildren()->contains($adminGroup)){
+            $userGroup->addChild($adminGroup);
 		}
 		$this->entityManager->persist($adminGroup);
+        $this->entityManager->persist($userGroup);
 		$this->entityManager->persist($root);
 
 		$this->entityManager->flush();

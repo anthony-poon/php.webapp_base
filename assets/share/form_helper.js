@@ -1,3 +1,4 @@
+
 function bindDOMElement() {
     $(document).on("click", "*[data-collection-remove]", function(evt) {
         $(evt.target).closest("[data-index]").remove();

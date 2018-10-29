@@ -30,22 +30,17 @@ class BaseTemplateHelper {
 				"icon" => "home",
 				"url" => $router->generate	("home"),
 			], [
-				"text" => "Administration",
-				"isVisible" => in_array("ROLE_ADMIN", $this->role),
-			], [
 				"text" => "User Management",
-				"url" => $router->generate("admin_list_user"),
+				"url" => $router->generate("user_list"),
 				"isVisible" => in_array("ROLE_ADMIN", $this->role),
-				"indent" => true,
 			], [
 				"text" => "Group Management",
-				"url" => $router->generate("admin_list_user_group"),
+				"url" => $router->generate("user_group_list"),
 				"isVisible" => in_array("ROLE_ADMIN", $this->role),
-				"indent" => true,
-			]
-
-
-
+			], [
+			    "text" => "Gallery",
+                "url" => $router->generate("gallery_index")
+            ]
 		];
     }
 

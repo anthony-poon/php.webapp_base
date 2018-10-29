@@ -1,32 +1,34 @@
-<div class="col-md-2 pl-4 pt-2 collapse fixed-top bg-white" id="side-menu">
-    <div class="row py-3">
+<div class="col-md-2 pl-3 pt-3 collapse fixed-top bg-white" id="side-menu">
+    <div class="row mb-5">
         <div class="col">
-            <i class="material-icons btn-like text-primary" data-toggle="collapse" data-target="#side-menu">
-                clear
-            </i>
+            <button type="button" class="btn btn-sm bg-light p-0">
+                <i class="material-icons text-primary align-middle" data-toggle="collapse" data-target="#side-menu">
+                    clear
+                </i>
+            </button>
         </div>
     </div>
     {% for item in template_helper.getSideMenu %}
         {% if item.isVisible is not defined or (item.isVisible is defined and item.isVisible) %}
             <div class="row">
-                <div class="col {{ item.indent is defined and item.indent ? "ml-3" : "" }}">
+                <div class="col">
                     {% if item.url is defined %}
-                        <a href="{{ item.url }}" class="menu-item btn-like py-2 pl-3">
+                        <a href="{{ item.url }}" class="menu-item btn-like py-1">
                             {% if item.icon is defined %}
-                                <i class="material-icons mr-3">{{ item.icon }}</i>
+                                <i class="material-icons p-1">{{ item.icon }}</i>
                             {% else %}
-                                <i class="material-icons mr-3 invisible">home</i>
+                                <i class="material-icons p-1 invisible">home</i>
                             {% endif %}
-                            <span class="text-wrapper"><small>{{ item.text }}</small></span>
+                            <span class="text-wrapper ml-3"><small>{{ item.text }}</small></span>
                         </a>
                     {% else %}
-                        <div class="menu-item btn-like py-2 px-3">
+                        <div class="menu-item btn-like py-1">
                             {% if item.icon is defined %}
-                                <i class="material-icons mr-3">{{ item.icon }}</i>
+                                <i class="material-icons p-1">{{ item.icon }}</i>
                             {% else %}
-                                <i class="material-icons mr-3 invisible">home</i>
+                                <i class="material-icons p-1 invisible">home</i>
                             {% endif %}
-                            <span class="text-wrapper"><small>{{ item.text }}</small></span>
+                            <span class="text-wrapper ml-3"><small>{{ item.text }}</small></span>
                         </div>
                     {% endif %}
                 </div>

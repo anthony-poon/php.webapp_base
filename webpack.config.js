@@ -6,6 +6,10 @@ Encore
     // the public path used by the web server to access the previous directory
     .setPublicPath('/build')
     .cleanupOutputBeforeBuild()
+    .addEntry("demo/gallery/index", [
+        "./assets/gallery/index.scss",
+        "./assets/gallery/index.js"
+    ])
     .addEntry("base", [
         "./assets/base.js",
         "./assets/base.scss",
@@ -14,9 +18,10 @@ Encore
     .createSharedEntry('vendor', [
         'jquery',
         'bootstrap',
+        '@fortawesome/fontawesome-free/css/all.css',
         'datatables.net-bs4/css/dataTables.bootstrap4.css',
         'datatables.net-buttons-bs4/css/buttons.bootstrap4.css',
-        'datatables.net-select-bs4/css/select.bootstrap4.css'
+        'datatables.net-select-bs4/css/select.bootstrap4.css',
     ])
     .enableSourceMaps(!Encore.isProduction())
     .enableSassLoader()

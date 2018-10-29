@@ -6,6 +6,7 @@
         <title>{{ template_helper.title }}</title>
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
         <link rel="stylesheet" href="{{ asset("build/vendor.css") }}">
         <link rel="stylesheet" href="{{ asset("build/base.css") }}">
         {% for css in template_helper.getCss %}
@@ -27,11 +28,7 @@
                 {% if menu_style != "collapse" %}
                     {% include("/component/view/left_menu_expand.html.twig") %}
                 {% endif %}
-                {% if layout == "full_width" %}
-                    <div class="col my-5 px-5" id="content-wrapper">
-                {% else %}
-                    <div class="col my-5" id="content-wrapper">
-                {% endif %}
+                <div class="col my-5 {{ layout == "full_width" ? "px-5" : "" }}" id="content-wrapper">
                     <div class="row">
                         <div class="col">
                             {% block body %}{% endblock %}
@@ -39,6 +36,28 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div id="notification" class="position-fixed fixed-top container-fluid alert alert-danger d-none">
+            <div id="notification-body" class="my-1 container">
+                <div class="row">
+                    <span id="notification-icon" class="col-auto">
+                        <i class="material-icons">
+                            info
+                        </i>
+                    </span>
+                    <span id="notification-text" class="ml-3 col">
+                        Please Enable Javascript
+                    </span>
+                    <span class="col-auto">
+                        <button type="button" class="close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div id="load-spinner" class="position-fixed fixed-bottom">
+
         </div>
         {% block modal %}{% endblock %}
         <script>

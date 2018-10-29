@@ -20,9 +20,9 @@ export default class EntityTable {
                 "style": "single"
             },
             "responsive": true,
-            "dom":  "<'row table_btn_grp'<'col-sm-12 col-md-6'B><'col-sm-12 col-md-6'f>>" +
+            "dom":  "<'row table_btn_grp'<'col d-flex align-items-center'B><'col-auto'f>>" +
             "<'row'<'col-sm-12'tr>>" +
-            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            "<'row'<'col'i><'col-auto'p>>",
             "buttons": [
                 {
                     text: "Create",

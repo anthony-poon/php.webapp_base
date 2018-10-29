@@ -23,10 +23,13 @@ class SecurityGroupForm extends AbstractType {
 		$dataObj = $builder->getData();
 		$builder->add('name', TextType::class)
 			->add("siteToken", TextType::class)
-			->add("children", CollectionType::class, [
+			->add("children", CompositeCollectionType::class, [
 				// TODO: Better ordering and display
 				"entry_type" => EntityType::class,
 				"label" => "Members",
+                "allow_add" => true,
+                "allow_delete" => true,
+                "prototype" => true,
 				"entry_options" => [
 					"class" => DirectoryObject::class,
 					"choice_label" => "friendlyName",
