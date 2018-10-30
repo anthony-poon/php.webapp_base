@@ -6,7 +6,6 @@ parameters:
     layout: 'compact'
     # menu_style: 'collapse' / 'expand'
     menu_style: 'collapse'
-    app_data_dir: "%kernel.root_dir%\\..\\var\\app_data"
 
 services:
     # default configuration for services in *this* file
