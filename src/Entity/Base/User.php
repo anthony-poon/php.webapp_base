@@ -96,9 +96,7 @@ class User extends DirectoryObject implements UserInterface, \Serializable {
     	$parents = $parents->filter(function(DirectoryGroup $g) {
     		return $g instanceof SecurityGroup;
 		});
-    	$rtn = [
-    		"ROLE_USER"
-		];
+    	$rtn = [];
     	foreach ($parents as $g) {
     		/* @var SecurityGroup $g */
 			$rtn[] = $g->getSiteToken();

@@ -37,10 +37,7 @@ class BaseTemplateHelper {
 				"text" => "Group Management",
 				"url" => $router->generate("user_group_list"),
 				"isVisible" => in_array("ROLE_ADMIN", $this->role),
-			], [
-			    "text" => "Gallery",
-                "url" => $router->generate("gallery_index")
-            ]
+			]
 		];
     }
 
