@@ -29,7 +29,7 @@ class BaseTemplateHelper {
 				$this->role = $this->user->getRoles();
 			}
 		}
-		
+
     	$this->navMenu = [
         	[
         		"text" => "Home",
