@@ -15,14 +15,16 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-class SecurityAjaxController extends Controller {
+class SecurityAPIController extends Controller {
 
     /**
-     * @Route("/ajax/security/login", name="security_ajax_login")
+     * @Route("/api/security/login", name="security_api_login")
      */
     public function login() {
         $user = $this->getUser();
         return $this->json(array(
+            'id' => $user->getId(),
+            'fullName' => $user->getFullName(),
             'username' => $user->getUsername(),
             'roles' => $user->getRoles(),
         ));

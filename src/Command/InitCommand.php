@@ -59,10 +59,6 @@ class InitCommand extends Command {
         }
         $userGroup->setName("User Group");
         $userGroup->setSiteToken("ROLE_USER");
-
-		if (!$userGroup->getChildren()->contains($adminGroup)){
-            $userGroup->addChild($adminGroup);
-		}
 		$this->entityManager->persist($adminGroup);
         $this->entityManager->persist($userGroup);
 		$this->entityManager->persist($root);
