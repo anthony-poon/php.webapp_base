@@ -26,44 +26,49 @@ class InitCommand extends Command {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-
-		$userRepo = $this->entityManager->getRepository(User::class);
-		$root = $userRepo->findOneBy(["username" => "root"]);
-		if (empty($root)) {
-			$output->writeln("Creating root users");
-			$root = new User();
-		}
-		$root->setUsername("root");
-		$root->setFullName("root");
-		$password = md5(random_bytes(10));
-		$passwordHash = $this->passwordEncoder->encodePassword($root, $password);
-		$root->setPassword($passwordHash);
+		$output->writeln("Creating root users");
+		$root = $this->initUser("root", random_bytes(10));
 		$output->writeln("Username: root");
-		$output->writeln("Password: ".$password);
+		$output->writeln("Password: ".$root->getPlainPassword());
 
-		$grpRepo = $this->entityManager->getRepository(SecurityGroup::class);
-		$adminGroup = $grpRepo->findOneBy(["siteToken" => "ROLE_ADMIN"]);
-		if (empty($adminGroup)) {
-			$output->writeln("Creating Admin Group");
-			$adminGroup = new SecurityGroup();
-		}
-		$adminGroup->setName("Administrator Group");
-		$adminGroup->setSiteToken("ROLE_ADMIN");
+        $output->writeln("Creating Admin Group");
+        $adminGroup = $this->initGroup("Admin Group", "ROLE_ADMIN");
         if (!$adminGroup->getChildren()->contains($root)) {
             $adminGroup->getChildren()->add($root);
         }
-        $userGroup = $grpRepo->findOneBy(["siteToken" => "ROLE_USER"]);
-        if (empty($userGroup)) {
-            $output->writeln("Creating User Group");
-            $userGroup = new SecurityGroup();
-        }
-        $userGroup->setName("User Group");
-        $userGroup->setSiteToken("ROLE_USER");
-		$this->entityManager->persist($adminGroup);
+
+        $output->writeln("Creating User Group");
+        $userGroup = $this->initGroup("User Group", "ROLE_USER");
+
+	    $this->entityManager->persist($adminGroup);
         $this->entityManager->persist($userGroup);
 		$this->entityManager->persist($root);
-
 		$this->entityManager->flush();
     }
 
+    private function initGroup(string $groupName, string $siteToken): SecurityGroup {
+        $repo = $this->entityManager->getRepository(SecurityGroup::class);
+        $group = $repo->findOneBy(["siteToken" => $siteToken]);
+        if (!$group) {
+            $group = new SecurityGroup();
+            $group->setSiteToken($siteToken);
+        }
+        $group->setName($groupName);
+        return $group;
+    }
+
+    private function initUser(string $username, string $password = "password"): User {
+        $userRepo = $this->entityManager->getRepository(User::class);
+        $user = $userRepo->findOneBy([
+            "username" => $username
+        ]);
+        if (!$user) {
+            $user = new User();
+            $user->setPlainPassword($password);
+            $user->setUsername($username);
+            $user->setFullName($username);
+        }
+        $user->setPassword($this->passwordEncoder->encodePassword($user, $password));
+        return $user;
+    }
 }
