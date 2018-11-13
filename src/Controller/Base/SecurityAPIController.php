@@ -18,16 +18,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class SecurityAPIController extends Controller {
 
     /**
-     * @Route("/api/security/login", name="security_api_login")
+     * @Route("/api/security/login", name="security_api_login", methods={"POST"})
      */
     public function login() {
         $user = $this->getUser();
-        return $this->json(array(
-            'id' => $user->getId(),
-            'fullName' => $user->getFullName(),
-            'username' => $user->getUsername(),
-            'roles' => $user->getRoles(),
-        ));
+        return $this->json([
+            'login' => true,
+            'user' => [
+                'id' => $user->getId(),
+                'fullName' => $user->getFullName(),
+                'username' => $user->getUsername(),
+            ]
+        ]);
     }
 
 }

@@ -27,7 +27,7 @@ class InitCommand extends Command {
 
     protected function execute(InputInterface $input, OutputInterface $output) {
 		$output->writeln("Creating root users");
-		$root = $this->initUser("root", random_bytes(10));
+		$root = $this->initUser("root", md5(random_bytes(10)));
 		$output->writeln("Username: root");
 		$output->writeln("Password: ".$root->getPlainPassword());
 
@@ -64,10 +64,10 @@ class InitCommand extends Command {
         ]);
         if (!$user) {
             $user = new User();
-            $user->setPlainPassword($password);
             $user->setUsername($username);
             $user->setFullName($username);
         }
+        $user->setPlainPassword($password);
         $user->setPassword($this->passwordEncoder->encodePassword($user, $password));
         return $user;
     }
