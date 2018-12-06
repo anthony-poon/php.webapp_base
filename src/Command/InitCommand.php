@@ -2,6 +2,9 @@
 
 namespace App\Command;
 
+use App\Entity\Base\AccessToken;
+use App\Entity\Base\DirectoryGroup;
+use App\Entity\Base\DirectoryObject;
 use App\Entity\Base\SecurityGroup;
 use App\Entity\Base\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,34 +29,57 @@ class InitCommand extends Command {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-		$output->writeln("Creating root users");
-		$root = $this->initUser("root", md5(random_bytes(10)));
-		$output->writeln("Username: root");
-		$output->writeln("Password: ".$root->getPlainPassword());
-
         $output->writeln("Creating Admin Group");
-        $adminGroup = $this->initGroup("Admin Group", "ROLE_ADMIN");
-        if (!$adminGroup->getChildren()->contains($root)) {
-            $adminGroup->getChildren()->add($root);
+        $adminGroup = $this->initGroup("Admin Group", "admin_group");
+        $output->writeln("Creating User Group");
+        $userGroup = $this->initGroup("User Group", "user_group");
+
+        $output->writeln("Creating Admin Token");
+        $adminToken = $this->initAccessToken("ROLE_ADMIN");
+        $userToken = $this->initAccessToken("ROLE_USER");
+        if (!$adminGroup->getAccessTokens()->contains($adminToken)) {
+            $adminGroup->getAccessTokens()->add($adminToken);
+        }
+        if (!$userGroup->getAccessTokens()->contains($userToken)) {
+            $userGroup->getAccessTokens()->add($userToken);
         }
 
-        $output->writeln("Creating User Group");
-        $userGroup = $this->initGroup("User Group", "ROLE_USER");
+		$output->writeln("Creating root users");
+		$root = $this->initUser("root", md5(random_bytes(32)));
+		$output->writeln("Username: root");
+		$output->writeln("Password: ".$root->getPlainPassword());
+		$adminGroup->addChild($root);
 
 	    $this->entityManager->persist($adminGroup);
         $this->entityManager->persist($userGroup);
+        $this->entityManager->persist($adminToken);
+        $this->entityManager->persist($userToken);
 		$this->entityManager->persist($root);
 		$this->entityManager->flush();
     }
 
-    private function initGroup(string $groupName, string $siteToken): SecurityGroup {
-        $repo = $this->entityManager->getRepository(SecurityGroup::class);
-        $group = $repo->findOneBy(["siteToken" => $siteToken]);
-        if (!$group) {
-            $group = new SecurityGroup();
-            $group->setSiteToken($siteToken);
+    private function initAccessToken(string $tokenStr) {
+        $repo = $this->entityManager->getRepository(AccessToken::class);
+        $token = $repo->findOneBy([
+            "token" => $tokenStr
+        ]);
+        if (!$token) {
+            $token = new AccessToken();
+            $token->setToken($tokenStr);
         }
-        $group->setName($groupName);
+        return $token;
+    }
+
+    private function initGroup(string $groupName, string $shortStr): DirectoryGroup {
+        $repo = $this->entityManager->getRepository(DirectoryGroup::class);
+        $group = $repo->findOneBy([
+            "shortStr" => $shortStr
+        ]);
+        if (!$group) {
+            $group = new DirectoryGroup();
+            $group->setName($groupName);
+            $group->setShortStr($shortStr);
+        }
         return $group;
     }
 
