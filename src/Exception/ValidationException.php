@@ -11,9 +11,9 @@ namespace App\Exception;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Throwable;
 
-class ValidationException extends \Exception {
+class ValidationException extends \Exception implements \JsonSerializable {
     private $errors = [];
-    public function __construct(ConstraintViolationListInterface $errors, int $code = 0, Throwable $previous = null) {
+    public function __construct(array $errors, int $code = 0, Throwable $previous = null) {
         foreach ($errors as $error) {
             /* @var $error \Symfony\Component\Validator\ConstraintViolation */
             $this->errors[$error->getPropertyPath()] = $error->getMessage();
@@ -24,4 +24,14 @@ class ValidationException extends \Exception {
     public function getErrors() {
         return $this->errors;
     }
+
+    public function jsonSerialize() {
+        return [
+            "status" => "failure",
+            "message" => $this->getMessage(),
+            "errors" => $this->getErrors()
+        ];
+    }
+
+
 }

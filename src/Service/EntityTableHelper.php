@@ -11,12 +11,11 @@ class EntityTableHelper {
     public const COL_HTML = "html";
     public const COL_STRING = "string";
     private $header = [];
-    private $table = [];
+    private $body = [];
     private $router;
     private $columnType = [];
-    private $title;
     private $btn = [];
-
+    private $haveToolbar = false;
     public function __construct(\Symfony\Component\Routing\RouterInterface $router) {
         $this->router = $router;
     }
@@ -30,18 +29,14 @@ class EntityTableHelper {
         return $this;
     }
 
-    public function addRow(int $index, array $row, ?array $param = null) {
-        $this->table[$index]["content"] = $row;
-        $this->table[$index]["param"] = json_encode($param);
-    }
-
-    /**
-     * @param mixed $title
-     * @return EntityTableHelper
-     */
-    public function setTitle($title) {
-        $this->title = $title;
-        return $this;
+    public function addRow(array $row, ?array $param = []) {
+        if (!$this->haveToolbar && !empty($param["read"]) || !empty($param["update"]) || !empty($param["delete"])) {
+            $this->haveToolbar = true;
+        }
+        $this->body[] = [
+            "content" => $row,
+            "param" => $param
+        ];
     }
 
     /**
@@ -71,10 +66,10 @@ class EntityTableHelper {
             }
         }
         return [
-            "title" => $this->title,
+            "haveToolbar" => $this->haveToolbar,
             "column" => json_encode($column),
             "btn" => json_encode($this->btn),
-            "table" => $this->table,
+            "body" => $this->body,
             "header" => $this->header,
         ];
     }

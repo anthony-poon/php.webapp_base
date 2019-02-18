@@ -1,33 +1,29 @@
-<div class="col-md-2 col-xs-12 pt-5 collapse" id="inline-side-menu">
-    <div class="row">
-        <div class="col">
-            {% for item in template_helper.getSideMenu %}
-                {% if item.isVisible is not defined or (item.isVisible is defined and item.isVisible) %}
-                    <div class="row">
-                        <div class="col">
-                            {% if item.url is defined %}
-                                <a href="{{ item.url }}" class="menu-item btn-like py-2">
-                                    {% if item.icon is defined %}
-                                        <i class="material-icons mr-3">{{ item.icon }}</i>
-                                    {% else %}
-                                        <i class="material-icons mr-3 invisible">home</i>
-                                    {% endif %}
-                                    <span class="text-wrapper"><small>{{ item.text }}</small></span>
-                                </a>
+<div class="pt-5" id="side-menu">
+    {% for item in template_helper.getSideMenu %}
+        {% if item.hide is not defined or (item.hide is defined and not item.hide) %}
+            <div class="row">
+                <div class="col">
+                    {% if item.url is defined %}
+                        <a href="{{ item.url }}" class="menu-item btn-like py-1">
+                            {% if item.icon is defined %}
+                                <i class="material-icons p-1">{{ item.icon }}</i>
                             {% else %}
-                                <div class="menu-item py-2">
-                                    {% if item.icon is defined %}
-                                        <i class="material-icons mr-3">{{ item.icon }}</i>
-                                    {% else %}
-                                        <i class="material-icons mr-3 invisible">home</i>
-                                    {% endif %}
-                                    <span class="text-wrapper"><small>{{ item.text }}</small></span>
-                                </div>
+                                <i class="material-icons p-1 invisible">home</i>
                             {% endif %}
+                            <span class="text-wrapper ml-3"><small>{{ item.text }}</small></span>
+                        </a>
+                    {% else %}
+                        <div class="menu-item btn-like py-1">
+                            {% if item.icon is defined %}
+                                <i class="material-icons p-1">{{ item.icon }}</i>
+                            {% else %}
+                                <i class="material-icons p-1 invisible">home</i>
+                            {% endif %}
+                            <span class="text-wrapper ml-3"><small>{{ item.text }}</small></span>
                         </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
 </div>

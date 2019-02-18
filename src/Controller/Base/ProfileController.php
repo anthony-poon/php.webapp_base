@@ -3,7 +3,7 @@
 namespace App\Controller\Base;
 
 use App\Entity\Base\Directory\DirectoryGroup;
-use App\Entity\Base\Directory\User;
+use App\Entity\Base\User;
 use App\FormType\Base\UserForm;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -34,7 +34,7 @@ class ProfileController extends AbstractController {
             $em->persist($self);
             $em->flush();
         }
-        return $this->render('render/simple_form.html.twig', [
+        return $this->render('render/base/simple_form.html.twig', [
             "title" => "Profile Management",
             "form" => $form->createView()
         ]);
@@ -67,7 +67,7 @@ class ProfileController extends AbstractController {
             $em->flush();
             return $this->redirectToRoute("security_login");
         }
-        return $this->render('render/simple_form.html.twig', [
+        return $this->render('render/base/simple_form.html.twig', [
             "title" => "Register Account",
             "form" => $form->createView()
         ]);

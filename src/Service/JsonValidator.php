@@ -16,31 +16,59 @@ class JsonValidator {
     private $validator;
     private $allowExtraFields = false;
     private $allowMissingFields = false;
+    private $errors = [];
     public function __construct(ValidatorInterface $validator){
         $this->validator = $validator;
     }
 
+    /**
+     * @param array $json
+     * @param array $constraint
+     * @return bool
+     */
     public function validate(array $json, array $constraint): bool {
+        $this->errors = [];
         $errors = $this->validator->validate($json, new Assert\Collection([
             "fields" => $constraint,
             "allowExtraFields" => $this->allowExtraFields,
             "allowMissingFields" => $this->allowMissingFields,
         ]));
 
-        if (0 == count($errors)) {
+        foreach ($errors as $error) {
+            $this->errors[] = $error;
+        }
+
+        if (0 === count($this->errors)) {
             return true;
         } else {
-            throw new ValidationException($errors);
+            return false;
         }
     }
 
+    /**
+     * @param $entity
+     * @return bool
+     */
     public function validateEntity($entity): bool {
+        $this->errors = [];
         $errors = $this->validator->validate($entity);
-        if (0 == count($errors)) {
+
+        foreach ($errors as $error) {
+            $this->errors[] = $error;
+        }
+
+        if (0 === count($this->errors)) {
             return true;
         } else {
-            throw new ValidationException($errors);
+            return false;
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getErrors(): array {
+        return $this->errors;
     }
 
     /**

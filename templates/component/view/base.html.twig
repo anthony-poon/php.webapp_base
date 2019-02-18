@@ -7,12 +7,8 @@
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-        <link rel="stylesheet" href="{{ asset("build/vendor.css") }}">
-        <link rel="stylesheet" href="{{ asset("build/base.css") }}">
-        {% for css in template_helper.getCss %}
-            <link rel="stylesheet" href="{{ asset(css) }}">
-        {% endfor %}
-        {% block css %}{% endblock %}
+        <link rel="stylesheet" href="{{ asset("build/app.css") }}">
+        {% block stylesheets %}{% endblock %}
     </head>
     <body>
         {% include("/component/view/top_navbar.html.twig") %}
@@ -21,58 +17,25 @@
                 {% include("/component/view/side_menu_collapse.html.twig") %}
             </div>
         {% endif %}
-        <div class="{{ template_helper.getLayout == "full_width" ? "container-fluid" : "container" }}" id="main-wrapper">
+        <div class="container" id="main-wrapper">
+            <div class="row">
             {% if template_helper.getSideMenuStyle == "inline" %}
-                <div class="row">
+                <div class="col-3">
                     {% include("/component/view/side_menu_inline.html.twig") %}
                 </div>
-
             {% endif %}
-            <div class="row">
-                <div class="col my-5 {{ template_helper.getLayout == "full_width" ? "px-5" : "" }}" id="content-wrapper">
-                    <div class="row">
-                        <div class="col">
-                            {% block body %}{% endblock %}
-                        </div>
-                    </div>
+                <div class="col">
+                    {% block body %}{% endblock %}
                 </div>
             </div>
         </div>
-        <div id="notification" class="position-fixed fixed-top container-fluid alert alert-danger d-none">
-            <div id="notification-body" class="my-1 container">
-                <div class="row">
-                    <span id="notification-icon" class="col-auto">
-                        <i class="material-icons">
-                            info
-                        </i>
-                    </span>
-                    <span id="notification-text" class="ml-3 col">
-                        Please Enable Javascript
-                    </span>
-                    <span class="col-auto">
-                        <button type="button" class="close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </span>
-                </div>
-            </div>
+        <div id="js-notification-bar">
         </div>
         <div id="load-spinner" class="position-fixed fixed-bottom">
-
         </div>
         {% block modal %}{% endblock %}
-        <script>
-            window.Param = {};
-            {% for k, p in template_helper.jsParam %}
-                window.Param["{{ k }}"] = "{{ p }}";
-            {% endfor %}
-        </script>
-        <script src="{{ asset("build/manifest.js") }}"></script>
-        <script src="{{ asset("build/vendor.js") }}"></script>
-        <script src="{{ asset("build/base.js") }}"></script>
-        {% for js in template_helper.getJs %}
-            <script src="{{ asset(js) }}"></script>
-        {% endfor %}
+        <script src="{{ asset("build/runtime.js") }}"></script>
+        <script src="{{ asset("build/app.js") }}"></script>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

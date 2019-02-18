@@ -2,7 +2,9 @@
 
 namespace App\Controller\Base;
 
-use App\Entity\Base\Directory\User;
+use App\Entity\Base\Directory\DirectoryGroup;
+use App\Entity\Base\User;
+use App\Entity\Base\UserGroup;
 use App\FormType\Base\UserForm;
 use App\Service\BaseTemplateHelper;
 use App\Service\EntityTableHelper;
@@ -28,22 +30,29 @@ class UserController extends AbstractController {
         $helper->addButton("Edit", "user_edit");
         $helper->addButton("Delete", "user_delete");
         $helper->setHeader([
-            "#",
-            "Username",
-            "Full Name",
-            "Email"
+            [
+                "text" => "#",
+                "priority" => 1
+            ],[
+                "text" => "Username"
+            ],[
+                "text" => "Full Name"
+            ],[
+                "text" => "Email"
+            ]
         ]);
-        $helper->setTitle("Users");
         foreach ($users as $u) {
             /* @var User $u */
-            $helper->addRow($u->getId(), [
+            $helper->addRow([
                 $u->getId(),
                 $u->getUsername(),
                 $u->getFullName(),
                 $u->getEmail()
             ]);
         }
-        return $this->render("render/entity_table.html.twig", $helper->compile());
+        return $this->render("render/base/simple_entity_table.twig", [
+            "title" => "User Management"
+        ]);
     }
 
     /**
@@ -56,14 +65,19 @@ class UserController extends AbstractController {
         if ($form->isSubmitted() && $form->isValid()) {
             /* @var User $user */
             $user = $form->getData();
+            $userGrp = $this->getDoctrine()->getRepository(UserGroup::class)->findOneBy([
+                "groupName" => "All Users"
+            ]);
+            $user->joinGroups($userGrp);
             $pw = $encoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($pw);
             $em = $this->getDoctrine()->getManager();
+            $em->persist($userGrp);
             $em->persist($user);
             $em->flush();
             return $this->redirectToRoute("user_list");
         }
-        return $this->render("render/simple_form.html.twig", [
+        return $this->render("render/base/simple_form.html.twig", [
             "title" => "Create User",
             "form" => $form->createView()
         ]);
@@ -85,6 +99,9 @@ class UserController extends AbstractController {
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             /* @var User $user */
+            $userGrp = $this->getDoctrine()->getRepository(UserGroup::class)->findOneBy([
+                "groupName" => "All Users"
+            ]);
             $user = $form->getData();
             $pw = $user->getPlainPassword();
             if ($pw) {
@@ -96,7 +113,7 @@ class UserController extends AbstractController {
             $em->flush();
             return $this->redirectToRoute("user_list");
         }
-        return $this->render("render/simple_form.html.twig", [
+        return $this->render("render/base/simple_form.html.twig", [
             "title" => "Edit User",
             "form" => $form->createView()
         ]);

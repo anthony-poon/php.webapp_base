@@ -2,21 +2,33 @@
 
 namespace App\Command;
 
-use App\Entity\Base\Directory\AccessToken;
 use App\Entity\Base\Directory\DirectoryGroup;
-use App\Entity\Base\Directory\User;
+use App\Entity\Base\Directory\SitePermission;
+use App\Entity\Base\User;
+use App\Entity\Base\UserGroup;
+use App\Entity\Core\Department;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class InitCommand extends Command {
-    private $entityManager;
+    private $em;
     private $passwordEncoder;
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+    private $folder;
 
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, $name = null) {
-        $this->entityManager = $entityManager;
+    public function __construct(EntityManagerInterface $em, ParameterBagInterface $bag, UserPasswordEncoderInterface $passwordEncoder, $name = null) {
+        $this->em = $em;
+        $this->folder = realpath($bag->get("assets_path"));
+        if (!$this->folder) {
+            throw new \Exception("Invalid var folder.");
+        }
         $this->passwordEncoder = $passwordEncoder;
         parent::__construct($name);
     }
@@ -26,63 +38,83 @@ class InitCommand extends Command {
             ->setDescription("Create root user and role");
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output) {
+        $this->output = $output;
+        $output->writeln("Creating Everyone Group");
+        $allGroup = $this->initGroup("Everyone");
+
         $output->writeln("Creating Admin Group");
-        $adminGroup = $this->initGroup("Admin Group", "admin_group");
+        $adminGroup = $this->initGroup("All Admins");
+
         $output->writeln("Creating User Group");
-        $userGroup = $this->initGroup("User Group", "user_group");
+        $userGroup = $this->initGroup("All Users");
 
-        $output->writeln("Creating Admin Token");
-        $adminToken = $this->initAccessToken("ROLE_ADMIN");
-        $userToken = $this->initAccessToken("ROLE_USER");
-        if (!$adminGroup->getAccessTokens()->contains($adminToken)) {
-            $adminGroup->getAccessTokens()->add($adminToken);
+        $adminGroup->joinGroups($allGroup);
+        $userGroup->joinGroups($allGroup);
+
+        $output->writeln("Creating Admin Permission");
+        $adminPermission = $this->initSitePermission("ROLE_ADMIN");
+        $switchUserPermission = $this->initSitePermission("ROLE_ALLOWED_TO_SWITCH");
+        $userPermission = $this->initSitePermission("ROLE_USER");
+
+        $adminPermission->setBearer($adminGroup);
+        $switchUserPermission->setBearer($adminGroup);
+        $userPermission->setBearer($userGroup);
+
+        $output->writeln("Creating root users");
+        $root = $this->initUser("root", "password");
+        $root->joinGroups($adminGroup);
+
+        $this->em->persist($root);
+        $this->em->persist($allGroup);
+        $this->em->persist($adminGroup);
+        $this->em->persist($userGroup);
+        $this->em->persist($adminPermission);
+        $this->em->persist($switchUserPermission);
+        $this->em->persist($userPermission);
+        $this->em->flush();
+
+
+        $output->writeln("Username: root");
+        $output->writeln("Password: ".$root->getPlainPassword());
+        $output->writeln("Role:");
+        foreach ($root->getRoles() as $role) {
+            $output->writeln($role);
         }
-        if (!$userGroup->getAccessTokens()->contains($userToken)) {
-            $userGroup->getAccessTokens()->add($userToken);
-        }
-
-		$output->writeln("Creating root users");
-		$root = $this->initUser("root", md5(random_bytes(32)));
-		$output->writeln("Username: root");
-		$output->writeln("Password: ".$root->getPlainPassword());
-		$adminGroup->addChild($root);
-
-	    $this->entityManager->persist($adminGroup);
-        $this->entityManager->persist($userGroup);
-        $this->entityManager->persist($adminToken);
-        $this->entityManager->persist($userToken);
-		$this->entityManager->persist($root);
-		$this->entityManager->flush();
     }
 
-    private function initAccessToken(string $tokenStr) {
-        $repo = $this->entityManager->getRepository(AccessToken::class);
+    private function initSitePermission(string $roleName) {
+        $repo = $this->em->getRepository(SitePermission::class);
         $token = $repo->findOneBy([
-            "token" => $tokenStr
+            "role" => $roleName
         ]);
         if (!$token) {
-            $token = new AccessToken();
-            $token->setToken($tokenStr);
+            $token = new SitePermission();
+            $token->setRole($roleName);
         }
         return $token;
     }
 
-    private function initGroup(string $groupName, string $shortStr): DirectoryGroup {
-        $repo = $this->entityManager->getRepository(DirectoryGroup::class);
+    private function initGroup(string $groupName): DirectoryGroup {
+        $repo = $this->em->getRepository(UserGroup::class);
         $group = $repo->findOneBy([
-            "shortStr" => $shortStr
+            "groupName" => $groupName
         ]);
         if (!$group) {
-            $group = new DirectoryGroup();
-            $group->setName($groupName);
-            $group->setShortStr($shortStr);
+            $group = new UserGroup();
+            $group->setGroupName($groupName);
         }
         return $group;
     }
 
     private function initUser(string $username, string $password = "password"): User {
-        $userRepo = $this->entityManager->getRepository(User::class);
+        $userRepo = $this->em->getRepository(User::class);
         $user = $userRepo->findOneBy([
             "username" => $username
         ]);

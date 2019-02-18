@@ -1,10 +1,11 @@
 <?php
 namespace App\Service;
 
-use App\Entity\Base\Directory\User;
+use App\Entity\Base\User;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Security;
 
 class BaseTemplateHelper {
     private $sideMenu = [];
@@ -12,52 +13,35 @@ class BaseTemplateHelper {
     private $navMenu = [];
     private $layout;
     private $title = "Web Application";
-    private $jsParam = [];
-	private $user = null;
-	private $css = [];
-	private $js = [];
-	private $role = [];
-    public function __construct(RouterInterface $router, TokenStorageInterface $tokenStorage, ParameterBagInterface $params) {
+    private $security;
+    public function __construct(TokenStorageInterface $storage, RouterInterface $router, ParameterBagInterface $params, Security $security) {
         $this->sideMenuStyle = $params->get("side_menu_style");
         $this->layout = $params->get("layout");
-		$token = $tokenStorage->getToken();
-		$this->role = [];
+		$this->security = $security;
+		$token = $storage->getToken();
+        $isLoggedIn = false;
 		if ($token) {
-			$this->user = $token->getUser();
-			if ($this->user && $this->user instanceof User) {
-				$this->role = $this->user->getRoles();
-			}
-		}
+		    $user = $token->getUser();
+		    $isLoggedIn = $user instanceof User;
+        }
 
     	$this->navMenu = [
-        	[
-        		"text" => "Home",
-				"icon" => "home",
-				"url" => $router->generate("home"),
-			], [
-				"text" => "Administration",
-                "url" => $router->generate("user_list"),
-				"isVisible" => in_array("ROLE_ADMIN", $this->role),
-			], [
-                "text" => "Group Management",
-                "url" => $router->generate("user_group_list"),
-                "isVisible" => in_array("ROLE_ADMIN", $this->role) ,
-            ]
 		];
-
         $this->sideMenu = [
             [
                 "text" => "Home",
                 "icon" => "home",
-                "url" => $router->generate("home"),
-            ], [
-                "text" => "User",
+                "url" => $router->generate("default_index"),
+            ],
+            [
+                "text" => "User Administration",
                 "url" => $router->generate("user_list"),
-                "isVisible" => in_array("ROLE_ADMIN", $this->role),
-            ], [
-                "text" => "User Group",
-                "url" => $router->generate("user_group_list"),
-                "isVisible" => in_array("ROLE_ADMIN", $this->role) ,
+                "hide" => !$isLoggedIn || !$security->isGranted("ROLE_ADMIN")
+            ],
+            [
+                "text" => "Logout",
+                "url" => $router->generate("security_logout"),
+                "hide" => !$isLoggedIn
             ]
         ];
     }
@@ -124,47 +108,6 @@ class BaseTemplateHelper {
         $this->title = $title;
         return $this;
     }
-
-    /**
-     * @return array
-     */
-    public function getJsParam(): array {
-        return $this->jsParam;
-    }
-
-    /**
-     * @param array $jsParam
-     * @return BaseTemplateHelper
-     */
-    public function addJsParam(array $jsParam): BaseTemplateHelper {
-        $this->jsParam = array_merge($jsParam, $this->jsParam);
-        return $this;
-    }
-
-    public function addJs($js): BaseTemplateHelper {
-    	$this->js[] = $js;
-    	return $this;
-	}
-
-	public function addCss($css): BaseTemplateHelper {
-    	$this->css[] = $css;
-    	return $this;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getCss(): array {
-		return $this->css;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getJs(): array {
-		return $this->js;
-	}
-
     /**
      * @return mixed
      */

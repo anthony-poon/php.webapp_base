@@ -8,7 +8,7 @@
 
 namespace App\FormType\Base;
 
-use App\Entity\Base\Directory\User;
+use App\Entity\Base\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;

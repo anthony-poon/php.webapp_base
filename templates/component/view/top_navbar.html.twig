@@ -1,76 +1,30 @@
-<nav id="top-navbar" class="sticky-top bg-white">
-    <div class="container">
-        <div class="row">
-            {% if template_helper.getSideMenu %}
-                <div class="pl-0 col-auto align-items-center d-flex">
-                    <button class="btn btn-sm p-2 bg-white" type="button" data-toggle="collapse" data-target="#side-menu, #inline-side-menu" aria-controls="navbar-body" aria-expanded="false" aria-label="Toggle navigation">
-                        <i class="material-icons align-middle text-primary">
+<nav id="top-navbar" class="sticky-top">
+    <div class="container h-100">
+        <div class="row h-100">
+            {% if template_helper.getSideMenu and template_helper.getSideMenuStyle == "collapse" %}
+                <div class="col-auto">
+                    <button class="top-navbar__menu-btn" type="button" data-toggle="collapse" data-target="#side-menu, #inline-side-menu" aria-controls="navbar-body" aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="material-icons ml-2">
                             menu
                         </i>
+                        <span class="ml-3 mr-2 d-none d-md-inline-block">
+                            Menu
+                        </span>
                     </button>
                 </div>
             {% endif %}
-            <div class="col-md-auto col d-flex align-items-center justify-content-md-start justify-content-center {{ template_helper.getSideMenu ? "" : " ml-md-0 ml-5" }}" id="navbar-header">
-                <a class="py-2" href="#">{{ template_helper.title }}</a>
+            <div class="col">
             </div>
             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                <a class="col-auto order-md-2 d-flex justify-content-center align-items-center" href="#" role="button" data-toggle="collapse" data-target="#top-navbar .collapse.show, #account-menu" aria-haspopup="true" aria-expanded="false">
+                <a class="col-auto top-navbar__login-btn" href="#" role="button" data-toggle="collapse" data-target="#top-navbar .collapse.show, #account-menu" aria-haspopup="true" aria-expanded="false">
                     <i class="material-icons mr-md-3">account_circle</i>
                     <span class="d-md-inline d-none">{{ app.user.fullName }}</span>
                 </a>
             {% else %}
-                <a href="{{ path("security_login") }}" class="col-auto order-md-2 d-flex justify-content-center align-items-center">
+                <a href="{{ path("security_login") }}" class="col-auto top-navbar__login-btn">
                     <i class="material-icons mr-md-3">account_circle</i>
                     <span class="d-md-inline d-none">Welcome, Guest!</span>
                 </a>
-            {% endif %}
-            {% if template_helper.getNavMenu %}
-                <div class="col-xs-12 col-md order-md-1">
-                    <div class="h-100 row align-items-center navbar-scroll">
-                        {% for index, item in template_helper.getNavMenu %}
-                            {% if item.isVisible is not defined or item.isVisible %}
-                                <div class="col-auto py-2 font-weight-light">
-                                    <a class="text-primary" href="{{ item.url is defined ? item.url : "#" }}"
-                                        {% if item.dropdown is defined %}
-                                            data-toggle="collapse" data-target="#top-navbar .collapse.show, #submenu-{{ index }}"
-                                        {% endif %}
-                                    >
-                                        {{ item.text }}
-                                    </a>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-        <div class="row">
-            {% for index, item in template_helper.getNavMenu %}
-                {% if item.dropdown is defined %}
-                    <div class="col-auto collapse" id="submenu-{{ index }}">
-                        <div class="row">
-                            {% for subitem in item.dropdown %}
-                                {% if subitem.isVisible is not defined or subitem.isVisible %}
-                                    <a class="col-12 text-primary py-1 my-1 font-weight-light border-left border-primary" href="{{ subitem.url is defined ? subitem.url : "#" }}">
-                                        {{ subitem.text }}
-                                    </a>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                <div class="collapse ml-auto col-auto" id="account-menu">
-                    <div class="row">
-                        <a class="col-12 text-right py-1 my-1 text-primary pr-4 border-right border-primary font-weight-light" href="{{ path("profile_edit") }}">
-                            Profile
-                        </a>
-                        <a class="col-12 text-right py-1 my-1 text-primary pr-4 border-right border-primary font-weight-light" href="{{ path("logout") }}">
-                            Logout
-                        </a>
-                    </div>
-                </div>
             {% endif %}
         </div>
 

@@ -1,11 +1,37 @@
-@import "./_var.scss";
+@import "./custom.scss";
 
 html {
     color: #505050;
 }
 
 #top-navbar {
-    border-bottom: rgba(0, 0, 0, 0.1) 1px solid;
+    color: white;
+    background-color: #03a9f4;
+    height: 50px;
+    .top-navbar__menu-btn {
+        background-color: transparent;
+        border: 0;
+        height: 100%;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: background-color 0.4s;
+        cursor: pointer;
+        border-bottom: 4px solid #C6E8F6;
+    }
+    .top-navbar__menu-btn:hover {
+        background-color: white;
+        color: #03a9f4;
+        border-bottom: 4px solid white;
+    }
+    .top-navbar__login-btn {
+        height: 100%;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
     a {
         text-decoration: none;
         color: $text-muted;
@@ -23,12 +49,19 @@ html {
     }
 }
 
+.notification-bar {
+    color: $light;
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    z-index: $zindex-fixed;
+}
+
 #side-menu {
     border-right: rgba(0, 0, 0, 0.1) 1px solid;
     height: 100vh;
     .menu-item {
         transition: color 0.4s;
-        display: flex;
         font-size: $h6-font-size;
         .icon-wrapper {
             display: flex;
@@ -122,20 +155,48 @@ html {
     }
 }
 
-.btn-like {
-    transition: color 0.4s, background-color 0.4s;
+.hoverable {
     cursor: pointer;
 }
 
-.btn-like:hover {
+.btn-rd {
+    @extend .p-1;
+    @extend .rounded-circle;
+    width:  2.75rem;
+    height: 2.75rem;
 }
 
-.btn-like.text-danger:hover {
-    color: $secondary;
+.btn-like-bar {
+    display: flex;
+    align-items: center;
+    .btn-like:first-of-type {
+        margin-left: -8px;
+    }
+    .btn-like:last-of-type {
+        margin-right: -8px;
+    }
 }
 
-.btn-like.text-primary:hover {
-    color: $secondary;
+.btn-like {
+    @extend .px-3;
+    height: 100%;
+    transition: color 0.4s, background-color 0.4s;
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-like.disabled {
+    cursor: initial;
+}
+
+.btn-like.text-default:hover:not(.disabled), .btn-like.text-secondary:hover:not(.disabled) {
+    color: $primary !important;
+}
+
+.btn-like.text-primary:hover:not(.disabled), .btn-like.text-danger:hover:not(.disabled)  {
+    color: $secondary !important;
 }
 
 a.btn-like {
@@ -146,38 +207,6 @@ a.btn-like:hover {
     text-decoration: none;
 }
 
-.dataTables_wrapper.dt-bootstrap4 {
-    .dt-buttons.btn-group {
-        .btn {
-            border-radius: 0;
-            background-color: transparent;
-            border: 0;
-            //border: 4px transparent solid;
-            color: #007bff;
-            border-collapse: collapse;
-            padding-left: 16px;
-            padding-right: 16px;
-        }
-        .btn.disabled {
-            color: #CCCCCC;
-        }
-        .btn:hover:not(.disabled), .btn:active:not(.disabled) {
-            color: white;
-            background-color: #007bff;
-            //border-left: 4px #007bff solid;
-        }
-    }
-    table {
-        tr.selected {
-            transition: background-color 0.4s;
-            background-color: #3A99FC;
-            @extend .text-light;
-            td {
-                border-color: #3A99FC;
-            }
-        }
-        tr:hover {
-            cursor: pointer;
-        }
-    }
+a.no-decoration:hover {
+    text-decoration: none;
 }

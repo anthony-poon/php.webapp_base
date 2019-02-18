@@ -16,10 +16,11 @@ export default class EntityTable {
 
     init() {
         let arr = [];
+        $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
         this.btns.forEach((btn) => {
             let re = /{([\w_\-])+}/;
             let haveParam = re.test(btn.path) || !_.isEmpty(btn.param);
-            let className = "table-btn";
+            let className = "table-btn btn-primary";
             if (haveParam) {
                 className += " have-param";
             }
@@ -45,15 +46,17 @@ export default class EntityTable {
             })
         });
         this.table = $(this.el).DataTable({
-            "select": {
+            autoWidth: false,
+            select: {
                 "style": "single"
             },
-            "column": this.column,
-            "responsive": true,
-            "dom":  "<'row table_btn_grp'<'col d-flex align-items-center'B><'col-auto'f>>" +
+            order: [[ 0, "desc" ]],
+            column: this.column,
+            responsive: true,
+            dom:  "<'row table_btn_grp'<'col d-flex align-items-center'B><'col-auto'f>>" +
                 "<'row'<'col-sm-12'tr>>" +
                 "<'row'<'col'i><'col-auto'p>>",
-            "buttons": arr,
+            buttons: arr,
         });
         this.table.buttons(".table-btn.have-param").disable();
         this.table.on('select', (e, dt, type, indexes) => {

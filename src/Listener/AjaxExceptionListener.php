@@ -8,9 +8,11 @@
 
 namespace App\Listener;
 
+use App\Exception\ValidationException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AjaxExceptionListener {
@@ -24,22 +26,12 @@ class AjaxExceptionListener {
         $exception = $event->getException();
         $request = $event->getRequest();
         if ($request->getContentType() == "json") {
-            $code = 400;
-            $rtn = [
-                "status" => "failure",
-                "message" => $exception->getMessage()
-            ];
-            switch (get_class($exception)) {
-                case NotFoundHttpException::class:
-                    $code = 404;
-                    break;
-                case ValidationException::class:
-                    /* @var \App\Exception\ValidationException $exception */
-                    foreach ($exception->getErrors() as $k => $v) {
-                        $rtn["errors"][$k] = $v;
-                    }
-                    break;
-            }
+            $code = $exception instanceof HttpException ? $exception->getStatusCode() : 400;
+            $rtn = $exception instanceof \JsonSerializable ?
+                $exception->jsonSerialize() : [
+                    "status" => "failure",
+                    "message" => $exception->getMessage()
+                ];
             if ($this->isDev) {
                 $rtn["stackTrace"] = explode("\n", $exception->getTraceAsString());
             }
