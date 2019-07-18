@@ -10,7 +10,6 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class SecurityController extends AbstractController
 {
     /**
-     * @Route("", name="index")
      * @Route("/security/login", name="security_login")
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
@@ -27,6 +26,6 @@ class SecurityController extends AbstractController
      * @Route("/security/logout", name="security_logout")
      */
     public function logout() {
-        return $this->redirectToRoute("index");
+        return $this->redirectToRoute("default_index");
     }
 }
